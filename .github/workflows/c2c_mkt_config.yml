@@ -1,0 +1,32 @@
+name: C2C Auto Sync
+
+on:
+  schedule:
+  - cron: '30 3 * * *'   # 9 AM IST
+  - cron: '30 4 * * *'   # 10 AM IST
+  - cron: '30 5 * * *'   # 11 AM IST
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    env:
+      TABLEAU_PAT_NAME: ${{ secrets.TABLEAU_PAT_NAME }}
+      TABLEAU_PAT: ${{ secrets.TABLEAU_PAT }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Run script
+        run: python scripts/c2c_sync.py
