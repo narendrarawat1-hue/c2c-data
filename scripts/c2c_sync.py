@@ -124,11 +124,7 @@ def generate_html(df):
 # UPLOAD TO GITHUB
 # ==============================
 
-def upload_to_github(file_path, commit_message):
-    headers = {
-        "Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github+json"
-    }
+
 
     # Read file
     with open(file_path, "rb") as f:
@@ -182,8 +178,6 @@ if __name__ == "__main__":
     generate_html(df)
 
     # 🚀 Upload both files
-    upload_to_github(CSV_FILE, "Auto-update CSV from Tableau")
-    upload_to_github(HTML_FILE, "Auto-update HTML dashboard")
 
     sign_out(token)
 
