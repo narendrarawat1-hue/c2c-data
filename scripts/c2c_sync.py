@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import io
 import os
-import base64
 
 # ==============================
 # CONFIG
@@ -15,12 +14,9 @@ API_VERSION = "3.19"
 # 🔐 From GitHub Secrets
 PAT_NAME = os.getenv("TABLEAU_PAT_NAME")
 PAT_SECRET = os.getenv("TABLEAU_PAT")
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 SITE = "cars24"
 VIEW_ID = "e4fd94d1-3a86-4d66-a6bf-fc57f7ab2f4c"
-
-REPO = "narendrarawat1-hue/c2c-data"
 
 # Output files
 CSV_FILE = "c2c_dashboard_1.csv"
@@ -109,6 +105,7 @@ def generate_html(df):
     </head>
     <body>
         <h2>📊 C2C Dashboard (Auto Updated)</h2>
+        <p><b>Last Updated:</b> {pd.Timestamp.now()}</p>
         {df.to_html(index=False)}
     </body>
     </html>
@@ -118,40 +115,6 @@ def generate_html(df):
         f.write(html_content)
 
     print(f"✅ HTML updated: {HTML_FILE}")
-
-
-# ==============================
-# UPLOAD TO GITHUB
-# ==============================
-
-
-
-    # Read file
-    
-
-    # Get existing SHA (if file exists)
-    url = f"https://api.github.com/repos/{REPO}/contents/{file_path}"
-    response = requests.get(url, headers=headers)
-
-    sha = None
-    if response.status_code == 200:
-        sha = response.json().get("sha")
-
-    # Upload file
-    upload_resp = requests.put(
-        url,
-        headers=headers,
-        json={
-            "message": commit_message,
-            "content": base64.b64encode(content).decode(),
-            "sha": sha
-        }
-    )
-
-    if upload_resp.status_code not in [200, 201]:
-        raise Exception(f"❌ GitHub Upload Failed: {upload_resp.text}")
-
-    print(f"✅ Uploaded to GitHub: {file_path}")
 
 
 # ==============================
@@ -175,8 +138,6 @@ if __name__ == "__main__":
     df = download_csv(token, site_id)
 
     generate_html(df)
-
-    # 🚀 Upload both files
 
     sign_out(token)
 
