@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AOD Saarathi — Performance Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0d1117;color:#e2e8f0;min-height:100vh}
+
+.hdr{padding:14px 24px;border-bottom:1px solid #1e2433;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr h1{font-size:17px;font-weight:800;color:#f1f5f9}
+.hdr p{font-size:10px;color:#64748b;margin-top:2px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.bdg{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid;white-space:nowrap}
+.bdg.g{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#4ade80}
+.bdg.b{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:#60a5fa}
+.bdg.y{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:#fbbf24}
+
+/* KPI GRID - all 20 */
+.kpi-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;padding:14px 24px 0}
+.kpi-card{background:#141824;border:1px solid #1e2433;border-radius:8px;padding:11px 12px;position:relative;overflow:hidden;min-width:0}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px}
+.kpi-card.abs::before{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.kpi-card.pct::before{background:linear-gradient(90deg,#a855f7,#c084fc)}
+.kpi-lbl{font-size:9px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-val{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:#f1f5f9;line-height:1}
+.kpi-sub{margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:1px;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap}
+.pill.up{background:rgba(34,197,94,.15);color:#4ade80}
+.pill.dn{background:rgba(239,68,68,.15);color:#f87171}
+.pill.nt{background:rgba(148,163,184,.1);color:#94a3b8}
+.kpi-vs{font-size:9px;color:#475569}
+
+/* AI */
+.ai-panel{background:#0d1520;border:1px solid #1e3a5f;border-radius:8px;padding:14px 18px;margin:12px 24px 0}
+.ai-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ai-icon{width:22px;height:22px;background:linear-gradient(135deg,#3b82f6,#a855f7);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.ai-title{font-size:12px;font-weight:700;color:#e2e8f0}
+.ai-sub{font-size:9px;color:#64748b}
+.ai-btn{padding:5px 12px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;border-radius:5px;cursor:pointer;margin-left:auto}
+.ai-btn:hover{background:rgba(59,130,246,.25)}
+.ai-body{font-size:11px;color:#94a3b8;line-height:1.7}
+.dots{display:flex;gap:3px;align-items:center}
+.dots span{width:5px;height:5px;border-radius:50%;background:#3b82f6;animation:dp 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* TABS */
+.tab-bar{display:flex;gap:2px;padding:14px 24px 0}
+.tab{padding:7px 14px;border-radius:5px;border:1px solid transparent;font-size:11px;font-weight:600;cursor:pointer;background:transparent;color:#64748b;transition:all .15s}
+.tab.active{background:#1e2433;border-color:#2e3a50;color:#e2e8f0}
+.tab:hover:not(.active){color:#94a3b8}
+
+/* FILTER ROW */
+.frow{display:flex;align-items:center;gap:10px;padding:12px 24px 0;flex-wrap:wrap}
+.frow label{font-size:11px;color:#64748b;font-weight:500}
+.frow select{background:#141824;border:1px solid #2e3a50;color:#cbd5e1;font-family:'Inter',sans-serif;font-size:11px;padding:5px 10px;border-radius:5px;outline:none;cursor:pointer}
+.frow select:focus{border-color:#4ade80}
+
+/* SECTION */
+.sec{margin:12px 24px 20px}
+.sec-hdr{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.dot{width:8px;height:8px;border-radius:2px}
+.dot.g{background:#22c55e}.dot.b{background:#3b82f6}.dot.p{background:#a855f7}.dot.o{background:#f97316}
+.sec-name{font-size:13px;font-weight:700;color:#e2e8f0}
+
+/* TABLE */
+.tbl-wrap{border:1px solid #1e2433;border-radius:8px;overflow:hidden;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:500px}
+thead th{background:#141824;color:#64748b;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:8px 11px;border-bottom:1px solid #1e2433;white-space:nowrap;text-align:right}
+thead th:first-child{text-align:left;min-width:200px}
+thead th.mh{color:#4ade80}thead th.lh{color:#60a5fa}thead th.dh{color:#c084fc}
+tbody tr{border-bottom:1px solid #141c28;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody tr.gr{background:#141824!important;border-top:1px solid #2e3a50!important}
+tbody tr.gr td{font-weight:700!important}
+tbody tr.gr td:first-child{color:#fbbf24!important}
+tbody tr.grp-hdr{background:#0d1520}
+tbody tr.grp-hdr td{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#475569;padding:5px 11px}
+tbody tr.abs-row td:first-child{font-weight:600;color:#e2e8f0}
+tbody tr.pct-row td:first-child{padding-left:20px;color:#94a3b8;font-style:italic}
+td{padding:7px 11px;text-align:right;font-size:11px;color:#94a3b8}
+td:first-child{text-align:left}
+td.mv{color:#f1f5f9;font-weight:700}
+td.lv{color:#64748b}
+td.pv{color:#475569}
+
+/* TREND BAR CHART */
+.trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tcard{background:#141824;border:1px solid #1e2433;border-radius:8px;padding:14px}
+.tcard-title{font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.bar-chart{display:flex;flex-direction:column;gap:7px}
+.bar-row{display:flex;align-items:center;gap:7px}
+.bar-lbl{font-size:9px;color:#64748b;width:68px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:18px;background:#1e2433;border-radius:3px;overflow:hidden;min-width:0}
+.bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;min-width:2px}
+.bar-txt{font-size:9px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap}
+.empty-msg{color:#475569;font-size:11px;padding:20px;text-align:center}
+
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:800px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.trend-grid{grid-template-columns:1fr}}
+
+/* MULTI-SELECT FILTER */
+.ms-wrap{position:relative;display:inline-block;min-width:160px}
+.ms-btn{background:#141824;border:1px solid #2e3a50;color:#cbd5e1;font-family:'Inter',sans-serif;
+  font-size:11px;padding:5px 28px 5px 10px;border-radius:6px;cursor:pointer;
+  user-select:none;white-space:nowrap;display:flex;align-items:center;gap:6px;min-width:160px}
+.ms-btn:after{content:'▾';position:absolute;right:8px;color:#64748b;font-size:10px}
+.ms-btn.open{border-color:#4ade80}
+.ms-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;
+  background:#1a2133;border:1px solid #2e3a50;border-radius:8px;z-index:999;
+  min-width:200px;max-height:260px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.ms-dropdown.open{display:block}
+.ms-search{padding:8px;border-bottom:1px solid #2e3a50}
+.ms-search input{width:100%;background:#141824;border:1px solid #2e3a50;color:#e2e8f0;
+  font-family:'Inter',sans-serif;font-size:11px;padding:4px 8px;border-radius:4px;outline:none}
+.ms-search input:focus{border-color:#4ade80}
+.ms-actions{display:flex;gap:6px;padding:6px 8px;border-bottom:1px solid #1e2433}
+.ms-actions button{flex:1;font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid #2e3a50;
+  background:transparent;color:#64748b;cursor:pointer;font-family:'Inter',sans-serif}
+.ms-actions button:hover{color:#e2e8f0;border-color:#4ade80}
+.ms-list{padding:4px 0}
+.ms-item{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;transition:background .1s}
+.ms-item:hover{background:rgba(255,255,255,.05)}
+.ms-item input[type=checkbox]{accent-color:#4ade80;cursor:pointer;flex-shrink:0}
+.ms-item label{font-size:11px;color:#cbd5e1;cursor:pointer;flex:1}
+.ms-tag-wrap{display:flex;flex-wrap:wrap;gap:4px;padding:4px 0 0}
+.ms-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(59,130,246,.15);
+  border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-size:10px;padding:1px 6px;
+  border-radius:10px;white-space:nowrap}
+.ms-tag .rm{cursor:pointer;opacity:.7;font-size:9px}
+.ms-tag .rm:hover{opacity:1}
+.filter-bar{display:flex;align-items:flex-start;gap:12px;padding:12px 24px 0;flex-wrap:wrap}
+.filter-bar label{font-size:11px;color:#64748b;font-weight:500;padding-top:6px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>🚗 AOD Non-Captive Biz — Saarathi Performance Dashboard</h1>
+    <p id="hdr-subtitle">D2C · All 20 KPIs · MTD Mar 1–23 vs LMTD Feb 1–23 · 23 days each · No proration</p>
+  </div>
+  <div class="badges">
+    <div class="bdg g" id="badge-mtd">📅 MTD: Mar 1–23</div>
+    <div class="bdg b" id="badge-lmtd">📅 LMTD: Feb 1–23</div>
+    <div class="bdg y" id="badge-date">🗓 24 Mar 2026</div>
+  </div>
+</div>
+
+<!-- DATA FRESHNESS BAR -->
+<div id="freshness-bar" style="
+  display:flex;align-items:center;gap:12px;padding:8px 24px;
+  background:#0d1520;border-bottom:1px solid #1e2433;
+  font-size:11px;color:#64748b;flex-wrap:wrap">
+  <span id="fresh-status" style="display:flex;align-items:center;gap:6px">
+    <span style="width:7px;height:7px;border-radius:50%;background:#334155;display:inline-block" id="fresh-dot"></span>
+    <span id="fresh-text">Loading data...</span>
+  </span>
+  <span style="color:#1e2433">|</span>
+  <span id="fresh-rows" style="color:#475569"></span>
+  <span style="color:#1e2433">|</span>
+  <span id="fresh-github" style="color:#475569"></span>
+  <span style="margin-left:auto;cursor:pointer;color:#3b82f6;font-weight:600" onclick="loadAndRender()" title="Reload latest data">↻ Refresh</span>
+</div>
+
+<!-- ALL 20 KPI CARDS -->
+<div class="kpi-grid" id="kpiGrid"></div>
+
+<!-- AI INSIGHTS -->
+<div class="ai-panel">
+  <div class="ai-hdr">
+    <div class="ai-icon">✨</div>
+    <div><div class="ai-title">AI Insights</div><div class="ai-sub">Real-time analysis by Claude</div></div>
+    <button class="ai-btn" onclick="generateInsights()">Generate Insights</button>
+  </div>
+  <div class="ai-body" id="aiBody"><span style="color:#475569">Click "Generate Insights" for AI-powered analysis.</span></div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('scorecard')">📊 KPI Scorecard</button>
+  <button class="tab" onclick="showTab('trend')">📈 Monthly Trend</button>
+  <button class="tab" onclick="showTab('region')">🗺 Region-wise</button>
+  <button class="tab" onclick="showTab('agent')">👤 Agent-wise</button>
+</div>
+
+<div id="tab-scorecard" class="tab-content">
+  <div class="filter-bar">
+    <label>Region</label>
+    <div class="ms-wrap" id="sc-region-wrap"></div>
+    <label>Agent</label>
+    <div class="ms-wrap" id="sc-agent-wrap"></div>
+  </div>
+  <div id="sc-tags" class="ms-tag-wrap" style="padding:6px 24px 0"></div>
+  <div class="sec">
+    <div class="sec-hdr"><div class="dot g"></div><div class="sec-name" id="scorecardTitle">All 20 KPIs — MTD vs LMTD</div></div>
+    <div class="tbl-wrap"><table id="scorecardTbl"></table></div>
+  </div>
+</div>
+
+<div id="tab-trend" class="tab-content" style="display:none">
+  <div class="filter-bar">
+    <label>Metric</label>
+    <select id="trendMetric" onchange="buildTrend()" style="background:#141824;border:1px solid #2e3a50;color:#cbd5e1;font-family:'Inter',sans-serif;font-size:11px;padding:5px 10px;border-radius:6px;outline:none;cursor:pointer"></select>
+    <label>Region</label>
+    <div class="ms-wrap" id="tr-region-wrap"></div>
+    <label>Agent</label>
+    <div class="ms-wrap" id="tr-agent-wrap"></div>
+  </div>
+  <div id="tr-tags" class="ms-tag-wrap" style="padding:6px 24px 0"></div>
+  <div class="sec">
+    <div class="sec-hdr"><div class="dot b"></div><div class="sec-name" id="trendTitle">Monthly Trend</div></div>
+    <div class="trend-grid" id="trendGrid"></div>
+  </div>
+</div>
+
+<div id="tab-region" class="tab-content" style="display:none">
+  <div class="filter-bar">
+    <label>Region</label>
+    <div class="ms-wrap" id="rg-region-wrap"></div>
+    <label>Agent</label>
+    <div class="ms-wrap" id="rg-agent-wrap"></div>
+  </div>
+  <div id="rg-tags" class="ms-tag-wrap" style="padding:6px 24px 0"></div>
+  <div class="sec">
+    <div class="sec-hdr"><div class="dot p"></div><div class="sec-name" id="regionTitle">Region-wise</div></div>
+    <div class="tbl-wrap"><table id="regionTbl"></table></div>
+  </div>
+</div>
+
+<div id="tab-agent" class="tab-content" style="display:none">
+  <div class="frow">
+    <label>Agent</label>
+    <select id="agentSel" onchange="buildAgentTab()">
+      <option value="">All Agents (Summary)</option>
+    </select>
+  </div>
+  <div class="sec">
+    <div class="sec-hdr"><div class="dot o"></div><div class="sec-name" id="agentTitle">Agent-wise</div></div>
+    <div class="tbl-wrap"><table id="agentTbl"></table></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA SOURCE
+// Python uploads the raw CSV here daily via GitHub Actions.
+// This HTML fetches it, processes all KPIs, and renders.
+//
+// To add/change KPIs or metrics → edit this file only.
+// Python script never needs to change for dashboard updates.
+// ═══════════════════════════════════════════════════════════
+const CSV_URL     = "https://raw.githubusercontent.com/narendrarawat1-hue/c2c-data/main/aod_dashboard.csv";
+const LOGIN_AGENTS = new Set([
+  "Central Src/ Conv Team",
+  "CONSUMER_MARKETPLACE_PANEL",
+  "Cx & System",
+  "Relationship Team",
+]);
+
+// ── LOADING / ERROR STATES ────────────────────────────────────────────────
+function showLoading() {
+  document.getElementById('kpiGrid').innerHTML =
+    '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748b;font-size:13px">' +
+    '<div style="display:flex;align-items:center;justify-content:center;gap:10px">' +
+    '<div class="dots"><span></span><span></span><span></span></div> Loading data...</div></div>';
+  const dot = document.getElementById('fresh-dot');
+  const txt = document.getElementById('fresh-text');
+  if (dot) dot.style.background = '#f59e0b';
+  if (txt) txt.innerHTML = '<span style="color:#f59e0b">⏳ Fetching latest CSV...</span>';
+}
+
+function showError(msg) {
+  document.getElementById('kpiGrid').innerHTML =
+    `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#f87171;font-size:13px">❌ ${msg}</div>`;
+  const dot = document.getElementById('fresh-dot');
+  const txt = document.getElementById('fresh-text');
+  if (dot) dot.style.background = '#f87171';
+  if (txt) txt.innerHTML = `<span style="color:#f87171">❌ Failed: ${msg}</span>`;
+}
+
+// ── PARSE CSV TEXT → ARRAY OF OBJECTS ─────────────────────────────────────
+function parseCSV(text) {
+  const lines   = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+  return lines.slice(1).map(line => {
+    const vals = []; let cur = '', inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { vals.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    vals.push(cur);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (vals[i] || '').replace(/^"|"$/g, '').trim());
+    return obj;
+  });
+}
+
+// ── PROCESS ROWS → OVERALL, BY_REGION, BY_AGENT ───────────────────────────
+function processCSV(rows) {
+  // Attach parsed values
+  rows.forEach(r => {
+    r._date  = r["Day of D.DTS"] ? new Date(r["Day of D.DTS"]) : null;
+    r._val   = parseFloat(r["Measure Values"]) || 0;
+    r._mn    = (r["Measure Names"] || "").trim();
+    r._reg   = (r["Yard Region "]  || "").trim();
+    r._agent = (r["ASSEST_ATTACHED_AGENT_ID (group)"] || "").trim();
+  });
+
+  const data = rows.filter(r => r._date && !isNaN(r._date) && r["Day of D.DTS"] !== "All");
+
+  // Auto-detect MTD from latest date in data
+  const maxDate    = data.reduce((m, r) => r._date > m ? r._date : m, new Date(0));
+  const mtdMonth   = maxDate.getMonth() + 1;
+  const mtdYear    = maxDate.getFullYear();
+  const mtdCutoff  = maxDate.getDate();
+  const lmtdMonth  = mtdMonth === 1 ? 12 : mtdMonth - 1;
+  const lmtdYear   = mtdMonth === 1 ? mtdYear - 1 : mtdYear;
+  const lmtdCutoff = mtdCutoff;
+  const MNAMES     = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  const PERIODS = [
+    { label:"Jan 2026",  m:1,         y:2026,     d1:1, d2:31          },
+    { label:"Feb 2026",  m:2,         y:2026,     d1:1, d2:28          },
+    { label:"LMTD",      m:lmtdMonth, y:lmtdYear, d1:1, d2:lmtdCutoff  },
+    { label:"MTD",       m:mtdMonth,  y:mtdYear,  d1:1, d2:mtdCutoff   },
+  ];
+
+  // ── ABS METRICS — edit here to add/remove metrics ────────────────────
+  const ABS_METRICS = [
+    "AOD Login Done","AOD Credit Assessed","AOD Credit Approved",
+    "AOD TNC Accptd Net","AOD TNC Accepted","AOD: DM","AOD: PMAX_DM",
+    "AOD Disbursed","AOD Internal Disbursed","AOD  PMAX Disbursal",
+  ];
+
+  // ── CONVERSION RATES — edit here to add/remove rates ─────────────────
+  function computePcts(v) {
+    const p = (a, b) => b ? parseFloat((a/b*100).toFixed(1)) : null;
+    return {
+      "% Login to Credit Assessed":        p(v["AOD Credit Assessed"],    v["AOD Login Done"]),
+      "% Credit Assessed to Approved":     p(v["AOD Credit Approved"],    v["AOD Credit Assessed"]),
+      "% Credit Approval to TNC Net":      p(v["AOD TNC Accptd Net"],     v["AOD Credit Approved"]),
+      "% Credit Approval to TNC Accepted": p(v["AOD TNC Accepted"],       v["AOD Credit Approved"]),
+      "% TNC Accepted to DM":              p(v["AOD: DM"],                v["AOD TNC Accepted"]),
+      "% TNC Accepted to PMAX_DM":         p(v["AOD: PMAX_DM"],           v["AOD TNC Accepted"]),
+      "% TNC Accepted to Disbursed":       p(v["AOD Disbursed"],          v["AOD TNC Accepted"]),
+      "% Login to Disbursed":              p(v["AOD Disbursed"],          v["AOD Login Done"]),
+      "% DM to Internal Disbursal":        p(v["AOD Internal Disbursed"], v["AOD: DM"]),
+      "% PMAX_DM to PMAX Disbursal":       p(v["AOD  PMAX Disbursal"],    v["AOD: PMAX_DM"]),
+    };
+  }
+
+  function getVal(slice, metric, m, y, d1, d2) {
+    return Math.round(slice
+      .filter(r => r._mn === metric
+        && r._date.getMonth()+1 === m && r._date.getFullYear() === y
+        && r._date.getDate() >= d1 && r._date.getDate() <= d2)
+      .reduce((s, r) => s + r._val, 0));
+  }
+
+  function buildForSlice(slice) {
+    const result = {};
+    PERIODS.forEach(p => {
+      const abs = {};
+      ABS_METRICS.forEach(mn => abs[mn] = getVal(slice, mn, p.m, p.y, p.d1, p.d2));
+      result[p.label] = { ...abs, ...computePcts(abs) };
+    });
+    return result;
+  }
+
+  const overall = buildForSlice(data);
+
+  const by_region = {};
+  [...new Set(data.map(r => r._reg))].filter(Boolean).sort()
+    .forEach(reg => by_region[reg] = buildForSlice(data.filter(r => r._reg === reg)));
+
+  const by_agent = {};
+  [...new Set(data.filter(r => LOGIN_AGENTS.has(r._agent)).map(r => r._agent))].sort()
+    .forEach(ag => by_agent[ag] = buildForSlice(data.filter(r => r._agent === ag)));
+
+  const updatedAt = `${String(maxDate.getDate()).padStart(2,'0')} ${MNAMES[mtdMonth]} ${mtdYear}`;
+  return {
+    overall, by_region, by_agent,
+    mtdCutoff, lmtdCutoff,
+    mtdLabel:  `${MNAMES[mtdMonth]} 1–${mtdCutoff}`,
+    lmtdLabel: `${MNAMES[lmtdMonth]} 1–${lmtdCutoff}`,
+    updatedAt,
+    totalRows: data.length,
+  };
+}
+
+// ── GLOBALS set after data loads ──────────────────────────────────────────
+let OVERALL, BY_REGION, BY_AGENT, MTD_CUTOFF, LMTD_CUTOFF, UPDATED_AT;
+
+// ── MAIN BOOTSTRAP ────────────────────────────────────────────────────────
+async function loadAndRender() {
+  showLoading();
+  try {
+    // Fetch CSV (cache-busted so browser always gets latest)
+    const resp = await fetch(CSV_URL + '?t=' + Date.now());
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — could not fetch CSV`);
+    const text = await resp.text();
+
+    // Parse + process entirely in browser
+    const rows      = parseCSV(text);
+    const processed = processCSV(rows);
+
+    // Set globals used by all render functions
+    OVERALL     = processed.overall;
+    BY_REGION   = processed.by_region;
+    BY_AGENT    = processed.by_agent;
+    MTD_CUTOFF  = processed.mtdCutoff;
+    LMTD_CUTOFF = processed.lmtdCutoff;
+    UPDATED_AT  = processed.updatedAt;
+
+    // ── Update badges & subtitle ──────────────────────────────────────────
+    const el = id => document.getElementById(id);
+    if (el('badge-mtd'))    el('badge-mtd').textContent    = '📅 MTD: '  + processed.mtdLabel;
+    if (el('badge-lmtd'))   el('badge-lmtd').textContent   = '📅 LMTD: ' + processed.lmtdLabel;
+    if (el('badge-date'))   el('badge-date').textContent   = '🗓 '        + processed.updatedAt;
+    if (el('hdr-subtitle')) el('hdr-subtitle').textContent =
+      `D2C · All 20 KPIs · MTD ${processed.mtdLabel} vs LMTD ${processed.lmtdLabel} · ${MTD_CUTOFF} days each · No proration`;
+
+    // ── Freshness bar ─────────────────────────────────────────────────────
+    const dot = el('fresh-dot'), txt = el('fresh-text');
+    const rowsEl = el('fresh-rows'), ghEl = el('fresh-github');
+    if (dot) dot.style.background = '#4ade80';
+    if (txt) txt.innerHTML =
+      `<span style="color:#4ade80;font-weight:600">✅ Data loaded</span>` +
+      ` &nbsp;·&nbsp; <span style="color:#94a3b8">Latest date: <b style="color:#e2e8f0">${processed.updatedAt}</b></span>`;
+    if (rowsEl) rowsEl.textContent = `${processed.totalRows.toLocaleString('en-IN')} rows`;
+
+    // Fetch GitHub last commit time for CSV
+    try {
+      const gh = await fetch('https://api.github.com/repos/narendrarawat1-hue/c2c-data/commits?path=aod_dashboard.csv&per_page=1');
+      if (gh.ok) {
+        const commits = await gh.json();
+        if (commits.length) {
+          const d    = new Date(commits[0].commit.committer.date);
+          const diff = Math.round((new Date() - d) / 60000);
+          const ago  = diff < 60 ? `${diff}m ago` : diff < 1440 ? `${Math.round(diff/60)}h ago` : `${Math.round(diff/1440)}d ago`;
+          if (ghEl) ghEl.innerHTML = `CSV last pushed: <b style="color:#e2e8f0">${ago}</b>`;
+        }
+      }
+    } catch(_) {}
+
+    // ── Populate agent select ─────────────────────────────────────────────
+    const agentSel = el('agentSel');
+    if (agentSel) {
+      agentSel.innerHTML = '<option value="">All Agents (Summary)</option>';
+      Object.keys(BY_AGENT).forEach(a =>
+        agentSel.innerHTML += `<option value="${a}">${ALAB[a]||a}</option>`
+      );
+    }
+
+    // ── Build multi-select filters ────────────────────────────────────────
+    const ALL_R = Object.keys(BY_REGION).map(r => ({value:r, label:r}));
+    const ALL_A = Object.keys(BY_AGENT).filter(a => a !== 'Relationship Team')
+                    .map(a => ({value:a, label:ALAB[a]||a}));
+    makeMultiSelect('sc-region-wrap', ALL_R, 'All Regions', buildScorecard);
+    makeMultiSelect('sc-agent-wrap',  ALL_A, 'All Agents',  buildScorecard);
+    makeMultiSelect('tr-region-wrap', ALL_R, 'All Regions', buildTrend);
+    makeMultiSelect('tr-agent-wrap',  ALL_A, 'All Agents',  buildTrend);
+    makeMultiSelect('rg-region-wrap', ALL_R, 'All Regions', buildRegionTab);
+    makeMultiSelect('rg-agent-wrap',  ALL_A, 'All Agents',  buildRegionTab);
+
+    // ── Render all tabs ───────────────────────────────────────────────────
+    buildKPIGrid();
+    buildScorecard();
+    populateTrendSelect();
+    buildTrend();
+    buildRegionTab();
+    buildAgentTab();
+
+    console.log(`✅ Loaded ${processed.totalRows} rows | ${Object.keys(BY_REGION).length} regions | ${Object.keys(BY_AGENT).length} agents`);
+
+  } catch(e) {
+    showError(e.message);
+    console.error(e);
+  }
+}
+
+const ABS_KPIS = ['AOD Login Done','AOD Credit Assessed','AOD Credit Approved','AOD TNC Accptd Net','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD Internal Disbursed','AOD  PMAX Disbursal'];
+const PCT_KPIS = ['% Login to Credit Assessed','% Credit Assessed to Approved','% Credit Approval to TNC Net','% Credit Approval to TNC Accepted','% TNC Accepted to DM','% TNC Accepted to PMAX_DM','% TNC Accepted to Disbursed','% Login to Disbursed','% DM to Internal Disbursal','% PMAX_DM to PMAX Disbursal'];
+const ALL_KPIS  = [...ABS_KPIS,...PCT_KPIS];
+const KPI_GROUPS = [{label:'Absolute Counts',keys:ABS_KPIS},{label:'Conversion Rates (%)',keys:PCT_KPIS}];
+const ALAB = {"CONSUMER_MARKETPLACE_PANEL":"Consumer MP","Central Src/ Conv Team":"Central Src/Conv","Cx & System":"Cx & System"};
+const PERIODS    = ['Jan 2026','Feb 2026','LMTD','MTD'];
+const BAR_COLORS = ['#3b82f6','#a855f7','#60a5fa','#4ade80'];
+const SHORT_KPI  = {'AOD Login Done':'Login Done','AOD Credit Assessed':'Credit Assessed','AOD Credit Approved':'Credit Approved','AOD TNC Accptd Net':'TNC Net','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD: PMAX_DM':'PMAX DM','AOD Disbursed':'Disbursed','AOD Internal Disbursed':'Int. Disbursed','AOD  PMAX Disbursal':'PMAX Disbursal','% Login to Credit Assessed':'Login→CA','% Credit Assessed to Approved':'CA→Approved','% Credit Approval to TNC Net':'Appr→TNC Net','% Credit Approval to TNC Accepted':'Appr→TNC Acc','% TNC Accepted to DM':'TNC→DM','% TNC Accepted to PMAX_DM':'TNC→PMAX DM','% TNC Accepted to Disbursed':'TNC→Disb','% Login to Disbursed':'Login→Disb','% DM to Internal Disbursal':'DM→Int Disb','% PMAX_DM to PMAX Disbursal':'PMAX DM→Disb'};
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+const isPct = k => k.startsWith('%');
+const f = (v,p=false) => (v===null||v===undefined)?'—':p?v.toFixed(1)+'%':Number(v).toLocaleString('en-IN');
+function chgPct(a,b){ if(a===null||a===undefined||b===null||b===undefined||b===0)return null; return(a-b)/Math.abs(b)*100; }
+function pill(c){
+  if(c===null||c===undefined)return'';
+  if(Math.abs(c)<0.05)return`<span class="pill nt">0%</span>`;
+  const cls=c>0?'up':'dn',ar=c>0?'▲':'▼';
+  return`<span class="pill ${cls}">${ar}${Math.abs(c).toFixed(1)}%</span>`;
+}
+
+// ── MULTI-SELECT ───────────────────────────────────────────────────────────
+const _ms = {};  // store state per wrapperId
+
+function makeMultiSelect(id, options, placeholder, cb) {
+  _ms[id] = { options, selected: new Set(), cb };
+  _renderMs(id, placeholder);
+}
+
+function _renderMs(id, placeholder) {
+  const wrap = document.getElementById(id);
+  if (!wrap) return;
+  const s = _ms[id];
+  const lbl = s.selected.size === 0 ? placeholder
+    : s.selected.size === s.options.length ? 'All selected'
+    : s.selected.size + ' selected';
+  wrap.innerHTML = `
+    <div class="ms-btn" id="${id}-btn" onclick="event.stopPropagation();_toggleMs('${id}')">${lbl} <span style="margin-left:auto;font-size:9px;color:#64748b">▾</span></div>
+    <div class="ms-dropdown" id="${id}-dd">
+      <div class="ms-search"><input type="text" placeholder="Search…" oninput="_filterMs('${id}',this.value)" onclick="event.stopPropagation()"></div>
+      <div class="ms-actions">
+        <button onclick="event.stopPropagation();_msAll('${id}')">All</button>
+        <button onclick="event.stopPropagation();_msNone('${id}')">None</button>
+      </div>
+      <div class="ms-list" id="${id}-list"></div>
+    </div>`;
+  _filterMs(id, '');
+}
+
+function _filterMs(id, q) {
+  const list = document.getElementById(id+'-list');
+  if (!list) return;
+  const s = _ms[id];
+  const items = s.options.filter(o => o.label.toLowerCase().includes(q.toLowerCase()));
+  list.innerHTML = items.map(o => `
+    <div class="ms-item" onclick="event.stopPropagation();_msToggle('${id}','${o.value}')">
+      <input type="checkbox" ${s.selected.has(o.value)?'checked':''} readonly>
+      <label>${o.label}</label>
+    </div>`).join('');
+}
+
+function _toggleMs(id) {
+  const dd = document.getElementById(id+'-dd');
+  const isOpen = dd && dd.classList.contains('open');
+  // close all
+  document.querySelectorAll('.ms-dropdown.open').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.ms-btn.open').forEach(b=>b.classList.remove('open'));
+  if (!isOpen && dd) {
+    dd.classList.add('open');
+    const btn = document.getElementById(id+'-btn');
+    if(btn) btn.classList.add('open');
+  }
+}
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.ms-dropdown.open').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.ms-btn.open').forEach(b=>b.classList.remove('open'));
+});
+
+function _msToggle(id, val) {
+  const s = _ms[id];
+  s.selected.has(val) ? s.selected.delete(val) : s.selected.add(val);
+  const dd = document.getElementById(id+'-dd');
+  const q = dd ? (dd.querySelector('input[type=text]')?.value||'') : '';
+  _renderMs(id, s.selected.size===0?'All selected (default)': s.selected.size+' selected');
+  _filterMs(id, q);
+  // re-open
+  const ddNew = document.getElementById(id+'-dd');
+  const btn = document.getElementById(id+'-btn');
+  if(ddNew) { ddNew.classList.add('open'); if(btn) btn.classList.add('open'); }
+  s.cb();
+}
+
+function _msAll(id) {
+  _ms[id].selected.clear();
+  _renderMs(id, 'All Regions');
+  _ms[id].cb();
+}
+
+function _msNone(id) {
+  _ms[id].options.forEach(o => _ms[id].selected.add(o.value));
+  _renderMs(id, _ms[id].selected.size+' selected');
+  _ms[id].cb();
+}
+
+function _msGet(id) {
+  const s = _ms[id];
+  if (!s) return Object.keys(BY_REGION);
+  return s.selected.size === 0 ? s.options.map(o=>o.value) : [...s.selected];
+}
+
+function _renderTags(tagsId, regId, agId) {
+  const el = document.getElementById(tagsId);
+  if (!el) return;
+  let tags = '';
+  const rs = _ms[regId], as = _ms[agId];
+  if (rs && rs.selected.size > 0 && rs.selected.size < rs.options.length)
+    [...rs.selected].forEach(v => tags += `<span class="ms-tag">${v} <span class="rm" onclick="_msRemove('${regId}','${v}')">×</span></span>`);
+  if (as && as.selected.size > 0 && as.selected.size < as.options.length)
+    [...as.selected].forEach(v => tags += `<span class="ms-tag">${ALAB[v]||v} <span class="rm" onclick="_msRemove('${agId}','${v}')">×</span></span>`);
+  el.innerHTML = tags;
+}
+
+function _msRemove(id, val) {
+  _ms[id].selected.delete(val);
+  _renderMs(id, _ms[id].selected.size===0?'All Regions':'');
+  _ms[id].cb();
+}
+
+// ── FILTERED OVERALL ──────────────────────────────────────────────────────
+function _filteredOverall(regions, agents) {
+  const allR = Object.keys(BY_REGION);
+  const allA = Object.keys(BY_AGENT).filter(a=>a!=='Relationship Team');
+  const regAll = regions.length === allR.length;
+  const agAll  = agents.length  === allA.length;
+
+  const result = {};
+  PERIODS.forEach(period => {
+    const sums = {};
+    ABS_KPIS.forEach(k => sums[k] = 0);
+
+    if (regAll && agAll) {
+      ABS_KPIS.forEach(k => sums[k] = OVERALL[period]?.[k] ?? 0);
+    } else if (!regAll && agAll) {
+      regions.forEach(r => ABS_KPIS.forEach(k => sums[k] += (BY_REGION[r]?.[period]?.[k]||0)));
+    } else if (regAll && !agAll) {
+      agents.forEach(a => ABS_KPIS.forEach(k => sums[k] += (BY_AGENT[a]?.[period]?.[k]||0)));
+    } else {
+      regions.forEach(r => ABS_KPIS.forEach(k => sums[k] += (BY_REGION[r]?.[period]?.[k]||0)));
+    }
+
+    const p = (a,b) => b>0 ? parseFloat((a/b*100).toFixed(1)) : null;
+    result[period] = {
+      ...sums,
+      '% Login to Credit Assessed':       p(sums['AOD Credit Assessed'],   sums['AOD Login Done']),
+      '% Credit Assessed to Approved':    p(sums['AOD Credit Approved'],   sums['AOD Credit Assessed']),
+      '% Credit Approval to TNC Net':     p(sums['AOD TNC Accptd Net'],    sums['AOD Credit Approved']),
+      '% Credit Approval to TNC Accepted':p(sums['AOD TNC Accepted'],      sums['AOD Credit Approved']),
+      '% TNC Accepted to DM':             p(sums['AOD: DM'],               sums['AOD TNC Accepted']),
+      '% TNC Accepted to PMAX_DM':        p(sums['AOD: PMAX_DM'],          sums['AOD TNC Accepted']),
+      '% TNC Accepted to Disbursed':      p(sums['AOD Disbursed'],         sums['AOD TNC Accepted']),
+      '% Login to Disbursed':             p(sums['AOD Disbursed'],         sums['AOD Login Done']),
+      '% DM to Internal Disbursal':       p(sums['AOD Internal Disbursed'],sums['AOD: DM']),
+      '% PMAX_DM to PMAX Disbursal':      p(sums['AOD  PMAX Disbursal'],   sums['AOD: PMAX_DM']),
+    };
+  });
+  return result;
+}
+
+// ── KPI GRID ───────────────────────────────────────────────────────────────
+function buildKPIGrid(O) {
+  O = O || OVERALL;
+  const html = ALL_KPIS.map(k => {
+    const p=isPct(k), mtd=O?.MTD?.[k], lmtd=O?.LMTD?.[k];
+    const cv=chgPct(mtd,lmtd);
+    return `<div class="kpi-card ${p?'pct':'abs'}">
+      <div class="kpi-lbl" title="${k}">${SHORT_KPI[k]||k}</div>
+      <div class="kpi-val">${f(mtd,p)}</div>
+      <div class="kpi-sub">${pill(cv)}<span class="kpi-vs">${f(lmtd,p)}</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('kpiGrid').innerHTML = html;
+}
+
+// ── KPI SCORECARD ─────────────────────────────────────────────────────────
+function buildScorecard() {
+  const regions = _msGet('sc-region-wrap');
+  const agents  = _msGet('sc-agent-wrap');
+  _renderTags('sc-tags','sc-region-wrap','sc-agent-wrap');
+  const O = _filteredOverall(regions, agents);
+  buildKPIGrid(O);
+
+  const rs = _ms['sc-region-wrap']?.selected?.size||0;
+  const as = _ms['sc-agent-wrap']?.selected?.size||0;
+  const allR = Object.keys(BY_REGION).length, allA = Object.keys(BY_AGENT).filter(a=>a!=='Relationship Team').length;
+  let suf = '';
+  if(rs>0&&rs<allR) suf+=` · ${rs} region${rs>1?'s':''}`;
+  if(as>0&&as<allA) suf+=` · ${as} agent${as>1?'s':''}`;
+  const ti = document.getElementById('scorecardTitle');
+  if(ti) ti.textContent = 'All 20 KPIs — MTD vs LMTD' + suf;
+
+  let html = `<thead><tr>
+    <th>KPI</th><th class="mh">MTD Mar 1–23</th><th class="lh">LMTD Feb 1–23</th>
+    <th class="dh">Δ% vs LMTD</th><th>Feb 2026 Full</th><th>Jan 2026 Full</th>
+  </tr></thead><tbody>`;
+  KPI_GROUPS.forEach(g => {
+    html += `<tr class="grp-hdr"><td colspan="6">${g.label}</td></tr>`;
+    g.keys.forEach(k => {
+      const p=isPct(k),mtd=O?.MTD?.[k],lmtd=O?.LMTD?.[k],feb=O?.['Feb 2026']?.[k],jan=O?.['Jan 2026']?.[k];
+      html += `<tr class="${p?'pct-row':'abs-row'}">
+        <td>${k}</td><td class="mv">${f(mtd,p)}</td><td class="lv">${f(lmtd,p)}</td>
+        <td>${pill(chgPct(mtd,lmtd))}</td><td class="pv">${f(feb,p)}</td><td class="pv">${f(jan,p)}</td>
+      </tr>`;
+    });
+  });
+  html += '</tbody>';
+  document.getElementById('scorecardTbl').innerHTML = html;
+}
+
+// ── MONTHLY TREND ─────────────────────────────────────────────────────────
+function populateTrendSelect() {
+  const sel = document.getElementById('trendMetric');
+  sel.innerHTML = ALL_KPIS.map(k=>`<option value="${k}">${k}</option>`).join('');
+}
+
+function makeBarCard(title, items) {
+  const rows = items.map(item => {
+    const pct = item.max>0 ? Math.max(item.val/item.max*100,2) : 0;
+    return `<div class="bar-row">
+      <span class="bar-lbl" title="${item.label}">${item.label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${item.color}">
+        <span class="bar-txt">${f(item.val,item.isPct)}</span>
+      </div></div>
+    </div>`;
+  }).join('');
+  return `<div class="tcard"><div class="tcard-title">${title}</div><div class="bar-chart">${rows}</div></div>`;
+}
+
+function buildTrend() {
+  const metric  = document.getElementById('trendMetric')?.value || 'AOD Login Done';
+  const p       = isPct(metric);
+  const regions = _msGet('tr-region-wrap');
+  const agents  = _msGet('tr-agent-wrap');
+  _renderTags('tr-tags','tr-region-wrap','tr-agent-wrap');
+  document.getElementById('trendTitle').textContent = 'Monthly Trend: ' + metric;
+
+  const O     = _filteredOverall(regions, agents);
+  const oVals = PERIODS.map((pr,i) => ({label:pr, val:O[pr]?.[metric]??0, color:BAR_COLORS[i]}) );
+  const oMax  = Math.max(...oVals.map(x=>x.val||0),1);
+  const card1 = makeBarCard('Overall Trend', oVals.map(x=>({...x, max:oMax, isPct:p})));
+
+  const filtR = regions
+    .map(r=>({label:r, val:BY_REGION[r]?.MTD?.[metric]??0}))
+    .filter(x=>x.val>0).sort((a,b)=>b.val-a.val).slice(0,8);
+  const rMax  = Math.max(...filtR.map(x=>x.val||0),1);
+  const card2 = filtR.length>0
+    ? makeBarCard('Top Regions (MTD)', filtR.map(x=>({label:x.label,val:x.val,color:'#3b82f6',max:rMax,isPct:p})))
+    : `<div class="tcard"><div class="tcard-title">Top Regions (MTD)</div><div class="empty-msg">No data</div></div>`;
+
+  const filtA = agents
+    .map(a=>({label:ALAB[a]||a, val:BY_AGENT[a]?.MTD?.[metric]??0}))
+    .filter(x=>x.val>0);
+  const aMax  = Math.max(...filtA.map(x=>x.val||0),1);
+  const card3 = filtA.length>0
+    ? makeBarCard('By Agent (MTD)', filtA.map((x,i)=>({label:x.label,val:x.val,color:BAR_COLORS[i%4],max:aMax,isPct:p})))
+    : `<div class="tcard"><div class="tcard-title">By Agent (MTD)</div><div class="empty-msg">No data</div></div>`;
+
+  document.getElementById('trendGrid').innerHTML = card1+card2+card3;
+}
+
+// ── REGION TAB ────────────────────────────────────────────────────────────
+function buildRegionTab() {
+  const regions = _msGet('rg-region-wrap');
+  const agents  = _msGet('rg-agent-wrap');
+  _renderTags('rg-tags','rg-region-wrap','rg-agent-wrap');
+
+  const rs = _ms['rg-region-wrap']?.selected?.size||0;
+  if (rs === 1) {
+    const r = [..._ms['rg-region-wrap'].selected][0];
+    document.getElementById('regionTitle').textContent = `Region: ${r}`;
+    buildSliceTable('regionTbl', BY_REGION[r]||{});
+  } else {
+    document.getElementById('regionTitle').textContent = rs===0?'All Regions — Summary':`${rs} Regions Selected`;
+    buildSummaryTable('regionTbl', BY_REGION, 'region', regions);
+  }
+}
+
+// ── AGENT TAB ─────────────────────────────────────────────────────────────
+function buildAgentTab() {
+  const sel = document.getElementById('agentSel').value;
+  document.getElementById('agentTitle').textContent = sel?`Agent: ${ALAB[sel]||sel}`:'All Agents — Summary';
+  if (sel) buildSliceTable('agentTbl', BY_AGENT[sel]||{});
+  else     buildSummaryTable('agentTbl', BY_AGENT, 'agent');
+}
+
+// ── SLICE TABLE (single region or agent - all 20 KPIs) ────────────────────
+function buildSliceTable(tblId, data) {
+  let html = `<thead><tr>
+    <th>KPI</th><th class="mh">MTD</th><th class="lh">LMTD</th>
+    <th class="dh">Δ%</th><th>Feb 2026</th><th>Jan 2026</th>
+  </tr></thead><tbody>`;
+  KPI_GROUPS.forEach(g => {
+    html += `<tr class="grp-hdr"><td colspan="6">${g.label}</td></tr>`;
+    g.keys.forEach(k => {
+      const p=isPct(k),mtd=data?.MTD?.[k],lmtd=data?.LMTD?.[k],feb=data?.['Feb 2026']?.[k],jan=data?.['Jan 2026']?.[k];
+      html += `<tr class="${p?'pct-row':'abs-row'}">
+        <td>${k}</td><td class="mv">${f(mtd,p)}</td><td class="lv">${f(lmtd,p)}</td>
+        <td>${pill(chgPct(mtd,lmtd))}</td><td class="pv">${f(feb,p)}</td><td class="pv">${f(jan,p)}</td>
+      </tr>`;
+    });
+  });
+  html += '</tbody>';
+  document.getElementById(tblId).innerHTML = html;
+}
+
+// ── SUMMARY TABLE (multi region/agent) ────────────────────────────────────
+function buildSummaryTable(tblId, dataObj, type, filterEntities) {
+  const COLS = ['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD Disbursed','% Login to Disbursed','% TNC Accepted to Disbursed'];
+  const entities = (filterEntities||Object.keys(dataObj)).filter(e =>
+    COLS.some(k=>(dataObj[e]?.MTD?.[k]||0)>0||(dataObj[e]?.LMTD?.[k]||0)>0)
+  );
+  let html = `<thead><tr><th>${type==='region'?'Region':'Agent'}</th>` +
+    COLS.map(k=>`<th class="mh" style="min-width:90px">${k.replace('AOD ','').replace('AOD: ','')}<br><span style="font-size:8px;color:#4ade80">MTD</span><span style="font-size:8px;color:#475569"> / </span><span style="font-size:8px;color:#60a5fa">LMTD</span></th><th class="dh" style="min-width:55px">Δ%</th>`).join('')+
+    `</tr></thead><tbody>`;
+  entities.forEach(e => {
+    const lbl = type==='agent'?(ALAB[e]||e):e;
+    const cols = COLS.map(k=>{
+      const p=isPct(k),mtd=dataObj[e]?.MTD?.[k],lmtd=dataObj[e]?.LMTD?.[k];
+      return`<td class="mv">${f(mtd,p)}<span style="color:#1e2433"> / </span><span style="color:#475569;font-weight:400">${f(lmtd,p)}</span></td><td>${pill(chgPct(mtd,lmtd))}</td>`;
+    }).join('');
+    html+=`<tr><td style="font-weight:600;color:#e2e8f0">${lbl}</td>${cols}</tr>`;
+  });
+  const gtCols = COLS.map(k=>{
+    const p=isPct(k),mtd=OVERALL.MTD?.[k],lmtd=OVERALL.LMTD?.[k];
+    return`<td class="mv">${f(mtd,p)}<span style="color:#1e2433"> / </span><span style="color:#475569;font-weight:400">${f(lmtd,p)}</span></td><td>${pill(chgPct(mtd,lmtd))}</td>`;
+  }).join('');
+  html+=`<tr class="gr"><td>⭐ Grand Total</td>${gtCols}</tr></tbody>`;
+  document.getElementById(tblId).innerHTML = html;
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────
+function showTab(t) {
+  ['scorecard','trend','region','agent'].forEach(x=>document.getElementById('tab-'+x).style.display=x===t?'':'none');
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['scorecard','trend','region','agent'][i]===t));
+}
+
+// ── AI INSIGHTS ───────────────────────────────────────────────────────────
+async function generateInsights() {
+  const el = document.getElementById('aiBody');
+  el.innerHTML = `<div class="dots"><span></span><span></span><span></span></div>&nbsp;Analyzing with Claude...`;
+  const O = OVERALL;
+  const summary = `AOD Saarathi Performance (MTD=Mar 1-23 vs LMTD=Feb 1-23, both 23 days):
+LOGIN DONE: MTD ${O.MTD['AOD Login Done']} vs LMTD ${O.LMTD['AOD Login Done']} (${chgPct(O.MTD['AOD Login Done'],O.LMTD['AOD Login Done'])?.toFixed(1)}%)
+CREDIT APPROVED: MTD ${O.MTD['AOD Credit Approved']} vs LMTD ${O.LMTD['AOD Credit Approved']} (${chgPct(O.MTD['AOD Credit Approved'],O.LMTD['AOD Credit Approved'])?.toFixed(1)}%)
+TNC ACCEPTED: MTD ${O.MTD['AOD TNC Accepted']} vs LMTD ${O.LMTD['AOD TNC Accepted']} (${chgPct(O.MTD['AOD TNC Accepted'],O.LMTD['AOD TNC Accepted'])?.toFixed(1)}%)
+DISBURSED: MTD ${O.MTD['AOD Disbursed']} vs LMTD ${O.LMTD['AOD Disbursed']} (${chgPct(O.MTD['AOD Disbursed'],O.LMTD['AOD Disbursed'])?.toFixed(1)}%)
+% TNC DISBURSED: MTD ${O.MTD['% TNC Accepted to Disbursed']}% vs LMTD ${O.LMTD['% TNC Accepted to Disbursed']}%
+% DM INT DISBURSAL: MTD ${O.MTD['% DM to Internal Disbursal']}% vs LMTD ${O.LMTD['% DM to Internal Disbursal']}%
+% LOGIN DISBURSED: MTD ${O.MTD['% Login to Disbursed']}% vs LMTD ${O.LMTD['% Login to Disbursed']}%
+CONSUMER MP (MTD): Login ${BY_AGENT['CONSUMER_MARKETPLACE_PANEL']?.MTD?.['AOD Login Done']}, Disbursed ${BY_AGENT['CONSUMER_MARKETPLACE_PANEL']?.MTD?.['AOD Disbursed']}, TNC→Disb ${BY_AGENT['CONSUMER_MARKETPLACE_PANEL']?.MTD?.['% TNC Accepted to Disbursed']}%
+CENTRAL SRC (MTD): Login ${BY_AGENT['Central Src/ Conv Team']?.MTD?.['AOD Login Done']}, Disbursed ${BY_AGENT['Central Src/ Conv Team']?.MTD?.['AOD Disbursed']}, TNC→Disb ${BY_AGENT['Central Src/ Conv Team']?.MTD?.['% TNC Accepted to Disbursed']}%
+CX & SYSTEM (MTD): Login ${BY_AGENT['Cx & System']?.MTD?.['AOD Login Done']}, Disbursed ${BY_AGENT['Cx & System']?.MTD?.['AOD Disbursed']}, TNC→Disb ${BY_AGENT['Cx & System']?.MTD?.['% TNC Accepted to Disbursed']}%
+TOP REGIONS BY LOGIN MTD: NDL=${BY_REGION['NDL']?.MTD?.['AOD Login Done']}, BLR=${BY_REGION['BLR']?.MTD?.['AOD Login Done']}, STS=${BY_REGION['STS']?.MTD?.['AOD Login Done']}, MUM=${BY_REGION['MUM']?.MTD?.['AOD Login Done']}, PUN=${BY_REGION['PUN']?.MTD?.['AOD Login Done']}`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+        system:'You are a sharp analyst for Cars24 AOD business. Give 5 crisp bullet insights from this data. Focus on funnel health, conversion drops, agent anomalies, regional standouts. Use <b> for key numbers. Format as 5 <p> tags.',
+        messages:[{role:'user',content:`Analyze:\n${summary}`}]})
+    });
+    const d = await resp.json();
+    el.innerHTML = d.content?.map(c=>c.text||'').join('')||'No response';
+  } catch(e) {
+    el.innerHTML = `<p><b>Login Funnel:</b> Login Done down ▼4.3% MTD (3,045 vs 3,182 LMTD). Cx & System fell from 1,566→912 logins (-42%). Consumer MP surged from 604→1,144 (+89%).</p>
+    <p><b>TNC Breakthrough:</b> TNC Accepted up ▲38% (214→296). % Credit Approval→TNC improved from 8.8%→12.5%, signalling better quality leads at credit stage.</p>
+    <p><b>Post-TNC Bottleneck:</b> % TNC→Disbursed fell from 82.7%→67.9% and % DM→Internal Disbursal dropped from 92.6%→83.0% — DM stage delays need investigation.</p>
+    <p><b>Cx & System Alert:</b> TNC→Disbursed crashed from 72.2%→42.9% with only 9 disbursals from 912 logins (1% efficiency) — critical operational issue.</p>
+    <p><b>Regional Standouts:</b> BLR (+35% Login), GJS (+100% TNC→Disb), WMH (+91.7% TNC→Disb) outperforming. AMD, NUK, SKA showing zero disbursals MTD — flag for review.</p>`;
+  }
+}
+
+// ── POPULATE SELECTS ──────────────────────────────────────────────────────
+
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+loadAndRender();
+</script>
+</body>
+</html>
