@@ -127,8 +127,7 @@ def generate_html(df):
 
 
     # Read file
-    with open(file_path, "rb") as f:
-        content = f.read()
+    
 
     # Get existing SHA (if file exists)
     url = f"https://api.github.com/repos/{REPO}/contents/{file_path}"
