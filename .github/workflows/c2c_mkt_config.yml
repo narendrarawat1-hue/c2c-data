@@ -2,9 +2,9 @@ name: C2C Auto Sync
 
 on:
   schedule:
-    - cron: '30 3 * * *'
-    - cron: '30 4 * * *'
-    - cron: '30 5 * * *'
+    - cron: '30 3 * * *'   # 9 AM IST
+    - cron: '30 4 * * *'   # 10 AM IST
+    - cron: '30 5 * * *'   # 11 AM IST
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,6 @@ jobs:
     env:
       TABLEAU_PAT_NAME: ${{ secrets.TABLEAU_PAT_NAME }}
       TABLEAU_PAT: ${{ secrets.TABLEAU_PAT }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repo
@@ -30,3 +29,15 @@ jobs:
 
       - name: Run script
         run: python scripts/c2c_sync.py
+
+      # 🔥 IMPORTANT STEP (MISSING BEFORE)
+      - name: Commit & push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          git add .
+
+          git diff --cached --quiet || git commit -m "Auto-update CSV + HTML"
+
+          git push
