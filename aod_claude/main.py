@@ -89,7 +89,20 @@ def sign_out(token):
 
 if __name__ == "__main__":
     token, site_id = sign_in()
+
     get_view_csv(token, site_id)
+
+    # ✅ HTML logic INSIDE main
+    import pandas as pd
+
+    df = pd.read_csv("output.csv")
+    html_content = df.to_html(index=False)
+
+    with open("aod_claude/aod_dashboard_v3.html", "w") as f:
+        f.write(html_content)
+
+    print("✅ HTML updated")
+
     sign_out(token)
 
     print("\n🎉 DONE\n")
