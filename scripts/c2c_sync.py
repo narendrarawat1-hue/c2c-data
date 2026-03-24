@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import io
 import os
+import base64
 
 # ==============================
 # CONFIG
@@ -14,13 +15,16 @@ API_VERSION = "3.19"
 # 🔐 From GitHub Secrets
 PAT_NAME = os.getenv("TABLEAU_PAT_NAME")
 PAT_SECRET = os.getenv("TABLEAU_PAT")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-SITE = "cars24"   # change if needed
+SITE = "cars24"
 VIEW_ID = "e4fd94d1-3a86-4d66-a6bf-fc57f7ab2f4c"
+
+REPO = "narendrarawat1-hue/c2c-data"
 
 # Output files
 CSV_FILE = "c2c_dashboard_1.csv"
-HTML_FILE = "aod_claude/c2c_live_dashboard (8).html"
+HTML_FILE = "scripts/c2c_live_dashboard.html"
 
 # ==============================
 # SIGN IN
@@ -58,7 +62,6 @@ def sign_in():
 
 def download_csv(token, site_id):
     url = f"{SERVER}/api/{API_VERSION}/sites/{site_id}/views/{VIEW_ID}/data"
-
     headers = {"X-Tableau-Auth": token}
 
     response = requests.get(url, headers=headers)
@@ -70,7 +73,6 @@ def download_csv(token, site_id):
 
     print(f"✅ Data downloaded: {df.shape}")
 
-    # Save CSV
     df.to_csv(CSV_FILE, index=False)
     print(f"✅ CSV saved: {CSV_FILE}")
 
@@ -119,6 +121,45 @@ def generate_html(df):
 
 
 # ==============================
+# UPLOAD TO GITHUB
+# ==============================
+
+def upload_to_github(file_path, commit_message):
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    # Read file
+    with open(file_path, "rb") as f:
+        content = f.read()
+
+    # Get existing SHA (if file exists)
+    url = f"https://api.github.com/repos/{REPO}/contents/{file_path}"
+    response = requests.get(url, headers=headers)
+
+    sha = None
+    if response.status_code == 200:
+        sha = response.json().get("sha")
+
+    # Upload file
+    upload_resp = requests.put(
+        url,
+        headers=headers,
+        json={
+            "message": commit_message,
+            "content": base64.b64encode(content).decode(),
+            "sha": sha
+        }
+    )
+
+    if upload_resp.status_code not in [200, 201]:
+        raise Exception(f"❌ GitHub Upload Failed: {upload_resp.text}")
+
+    print(f"✅ Uploaded to GitHub: {file_path}")
+
+
+# ==============================
 # SIGN OUT
 # ==============================
 
@@ -139,6 +180,10 @@ if __name__ == "__main__":
     df = download_csv(token, site_id)
 
     generate_html(df)
+
+    # 🚀 Upload both files
+    upload_to_github(CSV_FILE, "Auto-update CSV from Tableau")
+    upload_to_github(HTML_FILE, "Auto-update HTML dashboard")
 
     sign_out(token)
 
