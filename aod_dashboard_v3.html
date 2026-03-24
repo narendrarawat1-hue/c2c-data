@@ -286,7 +286,7 @@ function showError(msg) {
 // ── PARSE CSV TEXT → ARRAY OF OBJECTS ─────────────────────────────────────
 function parseCSV(text) {
   const lines   = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '')); // keep original spacing
   return lines.slice(1).map(line => {
     const vals = []; let cur = '', inQ = false;
     for (const ch of line) {
@@ -306,10 +306,10 @@ function processCSV(rows) {
   // Attach parsed values
   rows.forEach(r => {
     r._date  = r["Day of D.DTS"] ? new Date(r["Day of D.DTS"]) : null;
-    r._val   = parseFloat(r["Measure Values"]) || 0;
-    r._mn    = (r["Measure Names"] || "").trim();
-    r._reg   = (r["Yard Region "]  || "").trim();
-    r._agent = (r["ASSEST_ATTACHED_AGENT_ID (group)"] || "").trim();
+    r._val   = parseFloat(r["Measure Values"] || r["Measure Values "]) || 0;
+    r._mn    = (r["Measure Names"] || r["Measure Names "] || "").trim();
+    r._reg   = (r["Yard Region "] || r["Yard Region"] || "").trim();
+    r._agent = (r["ASSEST_ATTACHED_AGENT_ID (group)"] || r["ASSEST_ATTACHED_AGENT_ID (group) "] || "").trim();
   });
 
   const data = rows.filter(r => r._date && !isNaN(r._date) && r["Day of D.DTS"] !== "All");
@@ -437,7 +437,7 @@ async function loadAndRender() {
 
     // Fetch GitHub last commit time for CSV
     try {
-      const gh = await fetch('https://api.github.com/repos/narendrarawat1-hue/c2c-data/commits?path=aod_dashboard.csv&per_page=1');
+      const gh = await fetch('https://api.github.com/repos/narendrarawat1-hue/c2c-data/commits?path=output.csv&per_page=1');
       if (gh.ok) {
         const commits = await gh.json();
         if (commits.length) {
@@ -478,6 +478,8 @@ async function loadAndRender() {
     buildAgentTab();
 
     console.log(`✅ Loaded ${processed.totalRows} rows | ${Object.keys(BY_REGION).length} regions | ${Object.keys(BY_AGENT).length} agents`);
+    console.log('Regions found:', Object.keys(BY_REGION));
+    console.log('Sample row keys:', rows.length > 0 ? Object.keys(rows[0]) : 'no rows');
 
   } catch(e) {
     showError(e.message);
