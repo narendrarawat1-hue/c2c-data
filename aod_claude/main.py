@@ -14,7 +14,7 @@ TOKEN_NAME = os.getenv("TABLEAU_PAT_NAME")
 TOKEN_VALUE = os.getenv("TABLEAU_PAT")
 
 SITE_CONTENT_URL = "cars24"   # keep "" if default site
-VIEW_ID = "YOUR_VIEW_ID"   # replace this
+VIEW_ID = "2cd73242-c7a7-4abd-b2d6-bfa8d68fba31"   # replace this
 
 # ==============================
 # SIGN IN
