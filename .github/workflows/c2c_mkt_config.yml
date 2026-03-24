@@ -2,9 +2,9 @@ name: C2C Auto Sync
 
 on:
   schedule:
-  - cron: '30 3 * * *'   # 9 AM IST
-  - cron: '30 4 * * *'   # 10 AM IST
-  - cron: '30 5 * * *'   # 11 AM IST
+    - cron: '30 3 * * *'
+    - cron: '30 4 * * *'
+    - cron: '30 5 * * *'
   workflow_dispatch:
 
 jobs:
