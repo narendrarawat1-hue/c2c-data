@@ -14,10 +14,13 @@ jobs:
     env:
       TABLEAU_PAT_NAME: ${{ secrets.TABLEAU_PAT_NAME }}
       TABLEAU_PAT: ${{ secrets.TABLEAU_PAT }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # ✅ IMPORTANT
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          persist-credentials: true   # ✅ ensures push works
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -30,7 +33,6 @@ jobs:
       - name: Run script
         run: python scripts/c2c_sync.py
 
-      # 🔥 IMPORTANT STEP (MISSING BEFORE)
       - name: Commit & push changes
         run: |
           git config --global user.name "github-actions"
