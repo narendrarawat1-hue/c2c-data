@@ -11,16 +11,16 @@ import os
 SERVER = "https://prod-apsoutheast-a.online.tableau.com"
 API_VERSION = "3.19"
 
-# 🔐 From GitHub Secrets
 PAT_NAME = os.getenv("TABLEAU_PAT_NAME")
 PAT_SECRET = os.getenv("TABLEAU_PAT")
 
 SITE = "cars24"
 VIEW_ID = "e4fd94d1-3a86-4d66-a6bf-fc57f7ab2f4c"
 
-# Output files
+# ✅ IMPORTANT (root folder for GitHub Pages)
 CSV_FILE = "c2c_dashboard_1.csv"
-HTML_FILE = "scripts/c2c_live_dashboard.html"
+HTML_FILE = "c2c_live_dashboard.html"
+
 
 # ==============================
 # SIGN IN
@@ -80,6 +80,8 @@ def download_csv(token, site_id):
 # ==============================
 
 def generate_html(df):
+    last_updated = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+
     html_content = f"""
     <html>
     <head>
@@ -105,7 +107,7 @@ def generate_html(df):
     </head>
     <body>
         <h2>📊 C2C Dashboard (Auto Updated)</h2>
-        <p><b>Last Updated:</b> {pd.Timestamp.now()}</p>
+        <p><b>Last Updated:</b> {last_updated}</p>
         {df.to_html(index=False)}
     </body>
     </html>
