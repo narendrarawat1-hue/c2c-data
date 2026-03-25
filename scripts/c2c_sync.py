@@ -19,7 +19,7 @@ VIEW_ID = "e4fd94d1-3a86-4d66-a6bf-fc57f7ab2f4c"
 
 # ✅ IMPORTANT (root folder for GitHub Pages)
 CSV_FILE = "c2c_dashboard_1.csv"
-HTML_FILE = "c2c_live_dashboard.html"
+HTML_FILE = "aod_claude/c2c_live_dashboard.html"
 
 
 # ==============================
