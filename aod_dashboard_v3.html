@@ -220,6 +220,7 @@ td.pv{color:#475569}
   <button class="tab" onclick="showTab('trend')">📈 Monthly Trend</button>
   <button class="tab" onclick="showTab('region')">🗺 Region-wise</button>
   <button class="tab" onclick="showTab('agent')">👤 Agent-wise</button>
+  <button class="tab" onclick="showTab('summary')">📋 Summary</button>
 </div>
 
 <div id="tab-scorecard" class="tab-content">
@@ -279,6 +280,16 @@ td.pv{color:#475569}
   </div>
 </div>
 
+<div id="tab-summary" class="tab-content" style="display:none">
+  <div class="sec">
+    <div class="sec-hdr">
+      <div class="dot" style="background:#f59e0b;width:8px;height:8px;border-radius:2px"></div>
+      <div class="sec-name">Monthly Run Rate &amp; Last 5 Days</div>
+    </div>
+    <div id="summaryContent"><div style="color:#475569;padding:20px;font-size:11px">Loading...</div></div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════
 // DATA SOURCE
@@ -287,8 +298,9 @@ td.pv{color:#475569}
 // To add KPIs → edit _buildData(). To change layout → edit HTML.
 // ═══════════════════════════════════════════════════════════
 const CSV_URL      = "https://raw.githubusercontent.com/narendrarawat1-hue/c2c-data/main/output.csv";
-const LOGIN_AGENTS = new Set(["Central Src/ Conv Team","CONSUMER_MARKETPLACE_PANEL","Cx & System","Relationship Team"]);
-const ALAB = {"CONSUMER_MARKETPLACE_PANEL":"Consumer MP","Central Src/ Conv Team":"Central Src/Conv","Cx & System":"Cx & System"};
+const LOGIN_AGENTS = new Set(["Central Src/ Conv Team","CONSUMER_MARKETPLACE_PANEL","Cx & System","Relationship Team","NA"]);
+const ALAB = {"CONSUMER_MARKETPLACE_PANEL":"Consumer MP","Central Src/ Conv Team":"Central Src/Conv","Cx & System":"Cx & System","NA":"NA (Unassigned)"};
+const EXCLUDED_AGENTS = new Set(["Relationship Team"]);
 
 // ── KPI DEFINITIONS ───────────────────────────────────────────────────────
 const ABS_KPIS = ['AOD Login Done','AOD Credit Assessed','AOD Credit Approved','AOD TNC Accptd Net','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD Internal Disbursed','AOD  PMAX Disbursal'];
@@ -296,8 +308,9 @@ const PCT_KPIS = ['% Login to Credit Assessed','% Credit Assessed to Approved','
 const ALL_KPIS  = [...ABS_KPIS,...PCT_KPIS];
 const KPI_GROUPS= [{label:'Absolute Counts',keys:ABS_KPIS},{label:'Conversion Rates (%)',keys:PCT_KPIS}];
 const SHORT_KPI = {'AOD Login Done':'Login Done','AOD Credit Assessed':'Credit Assessed','AOD Credit Approved':'Credit Approved','AOD TNC Accptd Net':'TNC Net','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD: PMAX_DM':'PMAX DM','AOD Disbursed':'Disbursed','AOD Internal Disbursed':'Int. Disbursed','AOD  PMAX Disbursal':'PMAX Disbursal','% Login to Credit Assessed':'Login→CA','% Credit Assessed to Approved':'CA→Approved','% Credit Approval to TNC Net':'Appr→TNC Net','% Credit Approval to TNC Accepted':'Appr→TNC Acc','% TNC Accepted to DM':'TNC→DM','% TNC Accepted to PMAX_DM':'TNC→PMAX DM','% TNC Accepted to Disbursed':'TNC→Disb','% Login to Disbursed':'Login→Disb','% DM to Internal Disbursal':'DM→Int Disb','% PMAX_DM to PMAX Disbursal':'PMAX DM→Disb'};
-const BAR_COLORS= ['#3b82f6','#a855f7','#60a5fa','#4ade80'];
-const PERIODS_LABELS = ['Jan 2026','Feb 2026','LMTD','MTD'];
+const BAR_COLORS= ['#3b82f6','#a855f7','#60a5fa','#f59e0b','#4ade80'];
+let _periodsLabels = ['Feb 2026','Mar 2026','LMTD','MTD'];
+let _histLabels    = ['Feb 2026','Mar 2026'];
 
 // ── GLOBALS ───────────────────────────────────────────────────────────────
 let _rawRows  = [];
@@ -372,12 +385,16 @@ function _buildData(rows, gp){
     const mx=rows.reduce((m,r)=>r._date>m?r._date:m,new Date(0));
     mtdMonth=mx.getMonth()+1;mtdYear=mx.getFullYear();mtdCutoff=mx.getDate();
     lmtdMonth=mtdMonth===1?12:mtdMonth-1;lmtdYear=mtdMonth===1?mtdYear-1:mtdYear;lmtdCutoff=mtdCutoff;
-    PERIODS=[
-      {label:'Jan 2026',m:1,        y:2026,    d1:1,d2:31},
-      {label:'Feb 2026',m:2,        y:2026,    d1:1,d2:28},
-      {label:'LMTD',    m:lmtdMonth,y:lmtdYear,d1:1,d2:lmtdCutoff},
-      {label:'MTD',     m:mtdMonth, y:mtdYear, d1:1,d2:mtdCutoff},
-    ];
+    // Dynamic: 2 historical full months + LMTD full month + LMTD partial + MTD
+    PERIODS=[];
+    let hm=lmtdMonth,hy=lmtdYear;
+    for(let i=0;i<2;i++){hm=hm===1?12:hm-1;if(hm===12)hy--;const d2=new Date(hy,hm,0).getDate();PERIODS.unshift({label:`${MNAMES[hm]} ${hy}`,m:hm,y:hy,d1:1,d2});}
+    const lmtdFullDays=new Date(lmtdYear,lmtdMonth,0).getDate();
+    PERIODS.push({label:`${MNAMES[lmtdMonth]} ${lmtdYear}`,m:lmtdMonth,y:lmtdYear,d1:1,d2:lmtdFullDays});
+    PERIODS.push({label:'LMTD',m:lmtdMonth,y:lmtdYear,d1:1,d2:lmtdCutoff});
+    PERIODS.push({label:'MTD',m:mtdMonth,y:mtdYear,d1:1,d2:mtdCutoff});
+    _periodsLabels=PERIODS.map(p=>p.label);
+    _histLabels=_periodsLabels.slice(0,-2);
   }
 
   // ── Add absolute metrics here ────────────────────────────────────────────
@@ -414,8 +431,13 @@ function _buildData(rows, gp){
   const by_agent={};
 
   overall.data=bfs(rows);
-  [...new Set(rows.map(r=>r._reg))].filter(Boolean).sort().forEach(reg=>by_region[reg]=bfs(rows.filter(r=>r._reg===reg)));
-  [...new Set(rows.filter(r=>LOGIN_AGENTS.has(r._agent)).map(r=>r._agent))].sort().forEach(ag=>by_agent[ag]=bfs(rows.filter(r=>r._agent===ag)));
+  // Regions — include NA bucket (blank regions already mapped to 'NA')
+  [...new Set(rows.map(r=>r._reg))].sort().forEach(reg=>{if(reg)by_region[reg]=bfs(rows.filter(r=>r._reg===reg));});
+  // Agents — mapped agents get individual buckets; everything else → 'NA' bucket
+  const MAPPED_AGENTS=new Set(Object.keys(ALAB).filter(k=>k!=='NA'));
+  MAPPED_AGENTS.forEach(ag=>by_agent[ag]=bfs(rows.filter(r=>r._agent===ag)));
+  const naRows=rows.filter(r=>!MAPPED_AGENTS.has(r._agent)&&!EXCLUDED_AGENTS.has(r._agent));
+  if(naRows.length)by_agent['NA']=bfs(naRows);
 
   const mxDate=rows.reduce((m,r)=>r._date>m?r._date:m,new Date(0));
   const updatedAt=`${String(mxDate.getDate()).padStart(2,'0')} ${MNAMES[mxDate.getMonth()+1]} ${mxDate.getFullYear()}`;
@@ -425,7 +447,7 @@ function _buildData(rows, gp){
     mtdLabel:`${MNAMES[mtdMonth]} 1\u2013${mtdCutoff}`,
     lmtdLabel:`${MNAMES[lmtdMonth]} 1\u2013${lmtdCutoff}`,
     updatedAt, totalRows:rows.length,
-    _gp:{PERIODS,mtdMonth,mtdYear,mtdCutoff,lmtdMonth,lmtdYear,lmtdCutoff},
+    _gp:{PERIODS,mtdMonth,mtdYear,mtdCutoff,lmtdMonth,lmtdYear,lmtdCutoff,periodsLabels:_periodsLabels,histLabels:_histLabels},
   };
 }
 
@@ -458,7 +480,7 @@ function _recompute(){
   const agSel=el('agentSel');
   if(agSel){const cur=agSel.value;agSel.innerHTML='<option value="">All Agents (Summary)</option>';Object.keys(BY_AGENT).forEach(a=>agSel.innerHTML+=`<option value="${a}">${ALAB[a]||a}</option>`);agSel.value=cur;}
 
-  buildKPIGrid();buildScorecard();buildTrend();buildRegionTab();buildAgentTab();
+  buildKPIGrid();buildScorecard();buildTrend();buildRegionTab();buildAgentTab();buildSummaryTab();
 }
 
 // ── GLOBAL FILTER BAR ────────────────────────────────────────────────────
@@ -558,17 +580,21 @@ function buildScorecard(){
 
   buildKPIGridFiltered(O);
 
+  const h1=_histLabels[_histLabels.length-1]||'';  // most recent full month (e.g. Mar 2026)
+  const h2=_histLabels[_histLabels.length-2]||'';  // 2nd most recent full month (e.g. Feb 2026)
   let html=`<thead><tr>
     <th>KPI</th><th class="mh">MTD (${UPDATED_AT||''})</th><th class="lh">LMTD</th>
-    <th class="dh">Δ% vs LMTD</th><th>Feb 2026 Full</th><th>Jan 2026 Full</th>
+    <th class="dh">Δ% vs LMTD</th>${h1?`<th>${h1} Full</th>`:''} ${h2?`<th>${h2} Full</th>`:''}
   </tr></thead><tbody>`;
   KPI_GROUPS.forEach(g=>{
-    html+=`<tr class="grp-hdr"><td colspan="6">${g.label}</td></tr>`;
+    const colspan=4+(h1?1:0)+(h2?1:0);
+    html+=`<tr class="grp-hdr"><td colspan="${colspan}">${g.label}</td></tr>`;
     g.keys.forEach(k=>{
-      const p=isPct(k),mtd=O?.MTD?.[k],lmtd=O?.LMTD?.[k],feb=O?.['Feb 2026']?.[k],jan=O?.['Jan 2026']?.[k];
+      const p=isPct(k),mtd=O?.MTD?.[k],lmtd=O?.LMTD?.[k];
+      const v1=h1?O?.[h1]?.[k]:null, v2=h2?O?.[h2]?.[k]:null;
       html+=`<tr class="${p?'pct-row':'abs-row'}">
         <td>${k}</td><td class="mv">${f(mtd,p)}</td><td class="lv">${f(lmtd,p)}</td>
-        <td>${pill(chgPct(mtd,lmtd))}</td><td class="pv">${f(feb,p)}</td><td class="pv">${f(jan,p)}</td>
+        <td>${pill(chgPct(mtd,lmtd))}</td>${h1?`<td class="pv">${f(v1,p)}</td>`:''} ${h2?`<td class="pv">${f(v2,p)}</td>`:''}
       </tr>`;
     });
   });
@@ -619,7 +645,7 @@ function buildTrend(){
   document.getElementById('trendTitle').textContent='Monthly Trend: '+metric;
 
   const O=_filteredOverall(regions,agents);
-  const oVals=PERIODS_LABELS.map((pr,i)=>({label:pr,val:O?.[pr]?.[metric]??0,color:BAR_COLORS[i]}));
+  const oVals=_periodsLabels.map((pr,i)=>({label:pr,val:O?.[pr]?.[metric]??0,color:BAR_COLORS[i%BAR_COLORS.length]}));
   const oMax=Math.max(...oVals.map(x=>x.val||0),1);
   const card1=makeBarCard('Overall Trend',oVals.map(x=>({...x,max:oMax,isPct:p})));
 
@@ -681,19 +707,113 @@ function buildAgentTab(){
   else    buildSummaryTable('agentTbl',BY_AGENT,'agent');
 }
 
+// ── SUMMARY TAB (Daily Run Rate + Last 5 Days) ────────────────────────────
+function buildSummaryTab(){
+  const el=document.getElementById('summaryContent');
+  if(!el||!_gp||!_rawRows.length)return;
+  const {PERIODS,mtdMonth,mtdYear,mtdCutoff,lmtdMonth,lmtdYear}=_gp;
+  const MN=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const KEY_M=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD Disbursed'];
+  const KEY_L={'AOD Login Done':'Login Done','AOD Credit Approved':'Credit Approved','AOD TNC Accepted':'TNC Accepted','AOD Disbursed':'Disbursed'};
+  const validRows=_rawRows.filter(r=>r._date&&!isNaN(r._date)&&r['Day of D.DTS']!=='All');
+
+  function sumP(p,mn){
+    return Math.round(validRows.filter(r=>r._mn===mn&&r._date.getMonth()+1===p.m&&r._date.getFullYear()===p.y&&r._date.getDate()>=p.d1&&r._date.getDate()<=p.d2).reduce((s,r)=>s+r._val,0));
+  }
+
+  // ── DRR: last 2 full months + MTD ────────────────────────────────────────
+  const histPs=PERIODS.filter(p=>p.label!=='LMTD'&&p.label!=='MTD');
+  const mtdP=PERIODS.find(p=>p.label==='MTD');
+  const drrPs=[...histPs.slice(-2),mtdP].filter(Boolean);
+
+  let drrHtml=`<div style="margin-bottom:24px">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:6px"><span style="color:#f59e0b">■</span> Monthly Daily Run Rate (DRR)</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th style="text-align:left;min-width:160px">Metric</th>
+        ${drrPs.map(p=>{const days=p.d2-p.d1+1;const isMtd=p.label==='MTD';return`<th class="mh" style="min-width:130px">${p.label}${isMtd?` <span style="font-size:9px;color:#64748b">(Day 1–${days})</span>`:''}<br><span style="font-size:8px;color:#475569">Total &nbsp;|&nbsp; /day avg</span></th>`;}).join('')}
+      </tr></thead><tbody>`;
+
+  KEY_M.forEach(mn=>{
+    drrHtml+=`<tr><td style="font-weight:600;color:#e2e8f0">${KEY_L[mn]}</td>`;
+    drrPs.forEach(p=>{
+      const tot=sumP(p,mn);const days=p.d2-p.d1+1;const drr=days>0?(tot/days).toFixed(1):'—';
+      drrHtml+=`<td class="mv">${tot.toLocaleString('en-IN')}<span style="color:#64748b;font-weight:400;font-size:10px"> | ${drr}/d</span></td>`;
+    });
+    drrHtml+='</tr>';
+  });
+
+  // Conversion rate rows
+  [{lbl:'% Login→Disbursed',n:'AOD Disbursed',d:'AOD Login Done'},{lbl:'% TNC→Disbursed',n:'AOD Disbursed',d:'AOD TNC Accepted'}].forEach(({lbl,n,d})=>{
+    drrHtml+=`<tr><td style="color:#94a3b8;font-style:italic;padding-left:18px;font-size:10px">${lbl}</td>`;
+    drrPs.forEach(p=>{const nv=sumP(p,n),dv=sumP(p,d);const pct=dv>0?(nv/dv*100).toFixed(1)+'%':'—';drrHtml+=`<td class="lv">${pct}</td>`;});
+    drrHtml+='</tr>';
+  });
+
+  drrHtml+='</tbody></table></div></div>';
+
+  // ── LAST 5 DAYS ────────────────────────────────────────────────────────────
+  const dayMap={};
+  validRows.forEach(r=>{
+    const y=r._date.getFullYear(),mo=r._date.getMonth()+1,d=r._date.getDate();
+    const key=`${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if(!dayMap[key])dayMap[key]={};
+    if(!dayMap[key][r._mn])dayMap[key][r._mn]=0;
+    dayMap[key][r._mn]+=r._val;
+  });
+  const last5=Object.keys(dayMap).sort().slice(-5).reverse();
+  const fmtD=s=>{const[y,m,d]=s.split('-');return`${MN[parseInt(m)]} ${parseInt(d)}, ${y}`;};
+
+  let l5Html=`<div>
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:6px"><span style="color:#3b82f6">■</span> Last 5 Days — Daily Breakdown</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th style="text-align:left;min-width:130px">Date</th>
+        ${KEY_M.map(mn=>`<th class="mh">${KEY_L[mn]}</th>`).join('')}
+        <th class="dh">Login→Disb%</th>
+        <th class="dh">TNC→Disb%</th>
+      </tr></thead><tbody>`;
+
+  last5.forEach(ds=>{
+    const dd=dayMap[ds];
+    const login=Math.round(dd['AOD Login Done']||0);
+    const ca=Math.round(dd['AOD Credit Approved']||0);
+    const tnc=Math.round(dd['AOD TNC Accepted']||0);
+    const disb=Math.round((dd['AOD Disbursed']||dd['AOD Disbursed '])||0);
+    const l2d=login>0?(disb/login*100).toFixed(1)+'%':'—';
+    const t2d=tnc>0?(disb/tnc*100).toFixed(1)+'%':'—';
+    l5Html+=`<tr>
+      <td style="font-weight:600;color:#e2e8f0">${fmtD(ds)}</td>
+      <td class="mv">${login.toLocaleString('en-IN')}</td>
+      <td class="mv">${ca.toLocaleString('en-IN')}</td>
+      <td class="mv">${tnc.toLocaleString('en-IN')}</td>
+      <td class="mv">${disb.toLocaleString('en-IN')}</td>
+      <td class="lv">${l2d}</td>
+      <td class="lv">${t2d}</td>
+    </tr>`;
+  });
+
+  l5Html+='</tbody></table></div></div>';
+  el.innerHTML=drrHtml+l5Html;
+}
+
 // ── SLICE TABLE (single region or agent - all 20 KPIs) ────────────────────
 function buildSliceTable(tblId,data){
+  const h1=_histLabels[_histLabels.length-1]||'';
+  const h2=_histLabels[_histLabels.length-2]||'';
   let html=`<thead><tr>
     <th>KPI</th><th class="mh">MTD</th><th class="lh">LMTD</th>
-    <th class="dh">Δ%</th><th>Feb 2026</th><th>Jan 2026</th>
+    <th class="dh">Δ%</th>${h1?`<th>${h1}</th>`:''} ${h2?`<th>${h2}</th>`:''}
   </tr></thead><tbody>`;
   KPI_GROUPS.forEach(g=>{
-    html+=`<tr class="grp-hdr"><td colspan="6">${g.label}</td></tr>`;
+    const colspan=4+(h1?1:0)+(h2?1:0);
+    html+=`<tr class="grp-hdr"><td colspan="${colspan}">${g.label}</td></tr>`;
     g.keys.forEach(k=>{
-      const p=isPct(k),mtd=data?.MTD?.[k],lmtd=data?.LMTD?.[k],feb=data?.['Feb 2026']?.[k],jan=data?.['Jan 2026']?.[k];
+      const p=isPct(k),mtd=data?.MTD?.[k],lmtd=data?.LMTD?.[k];
+      const v1=h1?data?.[h1]?.[k]:null, v2=h2?data?.[h2]?.[k]:null;
       html+=`<tr class="${p?'pct-row':'abs-row'}">
         <td>${k}</td><td class="mv">${f(mtd,p)}</td><td class="lv">${f(lmtd,p)}</td>
-        <td>${pill(chgPct(mtd,lmtd))}</td><td class="pv">${f(feb,p)}</td><td class="pv">${f(jan,p)}</td>
+        <td>${pill(chgPct(mtd,lmtd))}</td>${h1?`<td class="pv">${f(v1,p)}</td>`:''} ${h2?`<td class="pv">${f(v2,p)}</td>`:''}
       </tr>`;
     });
   });
@@ -729,8 +849,8 @@ function buildSummaryTable(tblId,dataObj,type,filterEntities){
 
 // ── TAB SWITCHING ─────────────────────────────────────────────────────────
 function showTab(t){
-  ['scorecard','trend','region','agent'].forEach(x=>document.getElementById('tab-'+x).style.display=x===t?'':'none');
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['scorecard','trend','region','agent'][i]===t));
+  ['scorecard','trend','region','agent','summary'].forEach(x=>document.getElementById('tab-'+x).style.display=x===t?'':'none');
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['scorecard','trend','region','agent','summary'][i]===t));
 }
 
 // ── AUTO INSIGHTS (rule-based, no API needed) ────────────────────────────
@@ -852,8 +972,10 @@ async function loadAndRender(){
       r._date =r['Day of D.DTS']?new Date(r['Day of D.DTS']):null;
       r._val  =parseFloat(r['Measure Values'])||0;
       r._mn   =(r['Measure Names']||'').trim();
-      r._reg  =(r['Yard Region ']||r['Yard Region']||'').trim();
-      r._agent=(r['ASSEST_ATTACHED_AGENT_ID (group)']||'').trim();
+      const rawReg=(r['Yard Region ']||r['Yard Region']||'').trim();
+      r._reg  =(!rawReg||rawReg==='NaN'||rawReg.toLowerCase()==='nan')?'NA':rawReg;
+      const rawAgent=(r['ASSEST_ATTACHED_AGENT_ID (group)']||'').trim();
+      r._agent=(!rawAgent||rawAgent==='NaN'||rawAgent.toLowerCase()==='nan')?'NA':rawAgent;
     });
     _rawRows=rows;
 
