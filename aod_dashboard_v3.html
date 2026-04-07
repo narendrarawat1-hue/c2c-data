@@ -723,8 +723,8 @@ function buildSummaryTab(){
   if(!el||!_gp||!_rawRows.length)return;
   const {PERIODS,mtdMonth,mtdYear,mtdCutoff,lmtdMonth,lmtdYear}=_gp;
   const MN=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const KEY_M=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD Disbursed'];
-  const KEY_L={'AOD Login Done':'Login Done','AOD Credit Approved':'Credit Approved','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD Disbursed':'Disbursed'};
+  const KEY_M=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD  PMAX Disbursal'];
+  const KEY_L={'AOD Login Done':'Login Done','AOD Credit Approved':'Credit Approved','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD: PMAX_DM':'PMAX DM','AOD Disbursed':'Disbursed','AOD  PMAX Disbursal':'PMAX Disb'};
   const validRows=_rawRows.filter(r=>r._date&&!isNaN(r._date)&&r['Day of D.DTS']!=='All');
 
   function sumP(p,mn){
@@ -790,7 +790,9 @@ function buildSummaryTab(){
     const ca=Math.round(dd['AOD Credit Approved']||0);
     const tnc=Math.round(dd['AOD TNC Accepted']||0);
     const dm=Math.round(dd['AOD: DM']||0);
+    const pmaxdm=Math.round(dd['AOD: PMAX_DM']||0);
     const disb=Math.round((dd['AOD Disbursed']||dd['AOD Disbursed '])||0);
+    const pmaxdisb=Math.round(dd['AOD  PMAX Disbursal']||0);
     const l2d=login>0?(disb/login*100).toFixed(1)+'%':'—';
     const t2d=tnc>0?(disb/tnc*100).toFixed(1)+'%':'—';
     l5Html+=`<tr>
@@ -799,7 +801,9 @@ function buildSummaryTab(){
       <td class="mv">${ca.toLocaleString('en-IN')}</td>
       <td class="mv">${tnc.toLocaleString('en-IN')}</td>
       <td class="mv">${dm.toLocaleString('en-IN')}</td>
+      <td class="mv">${pmaxdm.toLocaleString('en-IN')}</td>
       <td class="mv">${disb.toLocaleString('en-IN')}</td>
+      <td class="mv">${pmaxdisb.toLocaleString('en-IN')}</td>
       <td class="lv">${l2d}</td>
       <td class="lv">${t2d}</td>
     </tr>`;
@@ -835,7 +839,7 @@ function buildSliceTable(tblId,data){
 
 // ── SUMMARY TABLE (all regions/agents side by side) ───────────────────────
 function buildSummaryTable(tblId,dataObj,type,filterEntities){
-  const COLS=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD Disbursed','% Login to Disbursed','% TNC Accepted to Disbursed'];
+  const COLS=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD  PMAX Disbursal','% Login to Disbursed','% TNC Accepted to Disbursed'];
   const entities=(filterEntities||Object.keys(dataObj)).filter(e=>COLS.some(k=>(dataObj[e]?.MTD?.[k]||0)>0||(dataObj[e]?.LMTD?.[k]||0)>0));
   let html=`<thead><tr><th>${type==='region'?'Region':'Agent'}</th>`+
     COLS.map(k=>`<th class="mh" style="min-width:90px">${k.replace('AOD ','').replace('AOD: ','')}<br><span style="font-size:8px;color:#4ade80">MTD</span><span style="font-size:8px;color:#475569"> / </span><span style="font-size:8px;color:#60a5fa">LMTD</span></th><th class="dh" style="min-width:55px">Δ%</th>`).join('')+
@@ -846,7 +850,7 @@ function buildSummaryTable(tblId,dataObj,type,filterEntities){
     html+=`<tr><td style="font-weight:600;color:#e2e8f0">${lbl}</td>${cols}</tr>`;
   });
   // Grand total = sum of filtered dataObj entities (not global OVERALL)
-  const ABS_GT=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD Disbursed'];
+  const ABS_GT=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD  PMAX Disbursal'];
   const pctGT=(a,b)=>b?parseFloat((a/b*100).toFixed(1)):null;
   const gtSums={MTD:{},LMTD:{}};
   ['MTD','LMTD'].forEach(period=>{
