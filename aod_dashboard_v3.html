@@ -7,41 +7,41 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#0d1117;color:#e2e8f0;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1e293b;min-height:100vh}
 
-.hdr{padding:14px 24px;border-bottom:1px solid #1e2433;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.hdr h1{font-size:17px;font-weight:800;color:#f1f5f9}
+.hdr{padding:14px 24px;border-bottom:1px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.hdr h1{font-size:17px;font-weight:800;color:#0f172a}
 .hdr p{font-size:10px;color:#64748b;margin-top:2px}
 .badges{display:flex;gap:6px;flex-wrap:wrap}
 .bdg{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid;white-space:nowrap}
-.bdg.g{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#4ade80}
-.bdg.b{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:#60a5fa}
-.bdg.y{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:#fbbf24}
+.bdg.g{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.3);color:#16a34a}
+.bdg.b{background:rgba(37,99,235,.08);border-color:rgba(37,99,235,.3);color:#2563eb}
+.bdg.y{background:rgba(217,119,6,.08);border-color:rgba(217,119,6,.25);color:#d97706}
 
 /* KPI GRID - all 20 */
 .kpi-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;padding:14px 24px 0}
-.kpi-card{background:#141824;border:1px solid #1e2433;border-radius:8px;padding:11px 12px;position:relative;overflow:hidden;min-width:0}
+.kpi-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:11px 12px;position:relative;overflow:hidden;min-width:0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px}
 .kpi-card.abs::before{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
 .kpi-card.pct::before{background:linear-gradient(90deg,#a855f7,#c084fc)}
-.kpi-lbl{font-size:9px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.kpi-val{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:#f1f5f9;line-height:1}
+.kpi-lbl{font-size:9px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-val{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:#0f172a;line-height:1}
 .kpi-sub{margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:1px;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap}
-.pill.up{background:rgba(34,197,94,.15);color:#4ade80}
-.pill.dn{background:rgba(239,68,68,.15);color:#f87171}
-.pill.nt{background:rgba(148,163,184,.1);color:#94a3b8}
-.kpi-vs{font-size:9px;color:#475569}
+.pill.up{background:rgba(22,163,74,.12);color:#16a34a}
+.pill.dn{background:rgba(220,38,38,.1);color:#dc2626}
+.pill.nt{background:rgba(100,116,139,.1);color:#64748b}
+.kpi-vs{font-size:9px;color:#94a3b8}
 
 /* AI */
-.ai-panel{background:#0d1520;border:1px solid #1e3a5f;border-radius:8px;padding:14px 18px;margin:12px 24px 0}
+.ai-panel{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:14px 18px;margin:12px 24px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .ai-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ai-icon{width:22px;height:22px;background:linear-gradient(135deg,#3b82f6,#a855f7);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
-.ai-title{font-size:12px;font-weight:700;color:#e2e8f0}
+.ai-title{font-size:12px;font-weight:700;color:#0f172a}
 .ai-sub{font-size:9px;color:#64748b}
-.ai-btn{padding:5px 12px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;border-radius:5px;cursor:pointer;margin-left:auto}
-.ai-btn:hover{background:rgba(59,130,246,.25)}
-.ai-body{font-size:11px;color:#94a3b8;line-height:1.7}
+.ai-btn{padding:5px 12px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);color:#2563eb;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;border-radius:5px;cursor:pointer;margin-left:auto}
+.ai-btn:hover{background:rgba(37,99,235,.15)}
+.ai-body{font-size:11px;color:#475569;line-height:1.7}
 .dots{display:flex;gap:3px;align-items:center}
 .dots span{width:5px;height:5px;border-radius:50%;background:#3b82f6;animation:dp 1.2s infinite}
 .dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
@@ -50,86 +50,86 @@ body{font-family:'Inter',sans-serif;background:#0d1117;color:#e2e8f0;min-height:
 /* TABS */
 .tab-bar{display:flex;gap:2px;padding:14px 24px 0}
 .tab{padding:7px 14px;border-radius:5px;border:1px solid transparent;font-size:11px;font-weight:600;cursor:pointer;background:transparent;color:#64748b;transition:all .15s}
-.tab.active{background:#1e2433;border-color:#2e3a50;color:#e2e8f0}
-.tab:hover:not(.active){color:#94a3b8}
+.tab.active{background:#fff;border-color:#e2e8f0;color:#2563eb;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tab:hover:not(.active){color:#334155;background:rgba(0,0,0,.03)}
 
 /* FILTER ROW */
 .frow{display:flex;align-items:center;gap:10px;padding:12px 24px 0;flex-wrap:wrap}
 .frow label{font-size:11px;color:#64748b;font-weight:500}
-.frow select{background:#141824;border:1px solid #2e3a50;color:#cbd5e1;font-family:'Inter',sans-serif;font-size:11px;padding:5px 10px;border-radius:5px;outline:none;cursor:pointer}
-.frow select:focus{border-color:#4ade80}
+.frow select{background:#fff;border:1px solid #cbd5e1;color:#334155;font-family:'Inter',sans-serif;font-size:11px;padding:5px 10px;border-radius:5px;outline:none;cursor:pointer}
+.frow select:focus{border-color:#3b82f6}
 
 /* SECTION */
 .sec{margin:12px 24px 20px}
 .sec-hdr{display:flex;align-items:center;gap:7px;margin-bottom:10px}
 .dot{width:8px;height:8px;border-radius:2px}
 .dot.g{background:#22c55e}.dot.b{background:#3b82f6}.dot.p{background:#a855f7}.dot.o{background:#f97316}
-.sec-name{font-size:13px;font-weight:700;color:#e2e8f0}
+.sec-name{font-size:13px;font-weight:700;color:#0f172a}
 
 /* TABLE */
-.tbl-wrap{border:1px solid #1e2433;border-radius:8px;overflow:hidden;overflow-x:auto}
+.tbl-wrap{border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;overflow-x:auto;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 table{border-collapse:collapse;width:100%;min-width:500px}
-thead th{background:#141824;color:#64748b;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:8px 11px;border-bottom:1px solid #1e2433;white-space:nowrap;text-align:right}
+thead th{background:#f8fafc;color:#64748b;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:8px 11px;border-bottom:1px solid #e2e8f0;white-space:nowrap;text-align:right}
 thead th:first-child{text-align:left;min-width:200px}
-thead th.mh{color:#4ade80}thead th.lh{color:#60a5fa}thead th.dh{color:#c084fc}
-tbody tr{border-bottom:1px solid #141c28;transition:background .1s}
+thead th.mh{color:#16a34a}thead th.lh{color:#2563eb}thead th.dh{color:#7c3aed}
+tbody tr{border-bottom:1px solid #f1f5f9;transition:background .1s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-tbody tr.gr{background:#141824!important;border-top:1px solid #2e3a50!important}
+tbody tr:hover{background:#f8fafc}
+tbody tr.gr{background:#f8fafc!important;border-top:1px solid #e2e8f0!important}
 tbody tr.gr td{font-weight:700!important}
-tbody tr.gr td:first-child{color:#fbbf24!important}
-tbody tr.grp-hdr{background:#0d1520}
-tbody tr.grp-hdr td{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#475569;padding:5px 11px}
-tbody tr.abs-row td:first-child{font-weight:600;color:#e2e8f0}
-tbody tr.pct-row td:first-child{padding-left:20px;color:#94a3b8;font-style:italic}
-td{padding:7px 11px;text-align:right;font-size:11px;color:#94a3b8}
+tbody tr.gr td:first-child{color:#d97706!important}
+tbody tr.grp-hdr{background:#f1f5f9}
+tbody tr.grp-hdr td{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#94a3b8;padding:5px 11px}
+tbody tr.abs-row td:first-child{font-weight:600;color:#0f172a}
+tbody tr.pct-row td:first-child{padding-left:20px;color:#64748b;font-style:italic}
+td{padding:7px 11px;text-align:right;font-size:11px;color:#64748b}
 td:first-child{text-align:left}
-td.mv{color:#f1f5f9;font-weight:700}
-td.lv{color:#64748b}
-td.pv{color:#475569}
+td.mv{color:#0f172a;font-weight:700}
+td.lv{color:#94a3b8}
+td.pv{color:#cbd5e1}
 
 /* TREND BAR CHART */
 .trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.tcard{background:#141824;border:1px solid #1e2433;border-radius:8px;padding:14px}
-.tcard-title{font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.tcard{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.tcard-title{font-size:10px;font-weight:700;color:#64748b;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
 .bar-chart{display:flex;flex-direction:column;gap:7px}
 .bar-row{display:flex;align-items:center;gap:7px}
-.bar-lbl{font-size:9px;color:#64748b;width:68px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar-track{flex:1;height:18px;background:#1e2433;border-radius:3px;overflow:hidden;min-width:0}
+.bar-lbl{font-size:9px;color:#94a3b8;width:68px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:18px;background:#f1f5f9;border-radius:3px;overflow:hidden;min-width:0}
 .bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;min-width:2px}
-.bar-txt{font-size:9px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap}
-.empty-msg{color:#475569;font-size:11px;padding:20px;text-align:center}
+.bar-txt{font-size:9px;font-weight:700;color:rgba(255,255,255,.95);white-space:nowrap}
+.empty-msg{color:#94a3b8;font-size:11px;padding:20px;text-align:center}
 
 @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(5,1fr)}}
 @media(max-width:800px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.trend-grid{grid-template-columns:1fr}}
 
 /* MULTI-SELECT FILTER */
 .ms-wrap{position:relative;display:inline-block;min-width:160px}
-.ms-btn{background:#141824;border:1px solid #2e3a50;color:#cbd5e1;font-family:'Inter',sans-serif;
+.ms-btn{background:#fff;border:1px solid #cbd5e1;color:#334155;font-family:'Inter',sans-serif;
   font-size:11px;padding:5px 28px 5px 10px;border-radius:6px;cursor:pointer;
   user-select:none;white-space:nowrap;display:flex;align-items:center;gap:6px;min-width:160px}
-.ms-btn:after{content:'▾';position:absolute;right:8px;color:#64748b;font-size:10px}
-.ms-btn.open{border-color:#4ade80}
+.ms-btn:after{content:'▾';position:absolute;right:8px;color:#94a3b8;font-size:10px}
+.ms-btn.open{border-color:#3b82f6}
 .ms-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;
-  background:#1a2133;border:1px solid #2e3a50;border-radius:8px;z-index:999;
-  min-width:200px;max-height:260px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  background:#fff;border:1px solid #e2e8f0;border-radius:8px;z-index:999;
+  min-width:200px;max-height:260px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.12)}
 .ms-dropdown.open{display:block}
-.ms-search{padding:8px;border-bottom:1px solid #2e3a50}
-.ms-search input{width:100%;background:#141824;border:1px solid #2e3a50;color:#e2e8f0;
+.ms-search{padding:8px;border-bottom:1px solid #f1f5f9}
+.ms-search input{width:100%;background:#f8fafc;border:1px solid #e2e8f0;color:#334155;
   font-family:'Inter',sans-serif;font-size:11px;padding:4px 8px;border-radius:4px;outline:none}
-.ms-search input:focus{border-color:#4ade80}
-.ms-actions{display:flex;gap:6px;padding:6px 8px;border-bottom:1px solid #1e2433}
-.ms-actions button{flex:1;font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid #2e3a50;
-  background:transparent;color:#64748b;cursor:pointer;font-family:'Inter',sans-serif}
-.ms-actions button:hover{color:#e2e8f0;border-color:#4ade80}
+.ms-search input:focus{border-color:#3b82f6}
+.ms-actions{display:flex;gap:6px;padding:6px 8px;border-bottom:1px solid #f1f5f9}
+.ms-actions button{flex:1;font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid #e2e8f0;
+  background:#f8fafc;color:#64748b;cursor:pointer;font-family:'Inter',sans-serif}
+.ms-actions button:hover{color:#0f172a;border-color:#3b82f6;background:#fff}
 .ms-list{padding:4px 0}
 .ms-item{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;transition:background .1s}
-.ms-item:hover{background:rgba(255,255,255,.05)}
-.ms-item input[type=checkbox]{accent-color:#4ade80;cursor:pointer;flex-shrink:0}
-.ms-item label{font-size:11px;color:#cbd5e1;cursor:pointer;flex:1}
+.ms-item:hover{background:#f8fafc}
+.ms-item input[type=checkbox]{accent-color:#3b82f6;cursor:pointer;flex-shrink:0}
+.ms-item label{font-size:11px;color:#334155;cursor:pointer;flex:1}
 .ms-tag-wrap{display:flex;flex-wrap:wrap;gap:4px;padding:4px 0 0}
-.ms-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(59,130,246,.15);
-  border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-size:10px;padding:1px 6px;
+.ms-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(37,99,235,.08);
+  border:1px solid rgba(37,99,235,.2);color:#2563eb;font-size:10px;padding:1px 6px;
   border-radius:10px;white-space:nowrap}
 .ms-tag .rm{cursor:pointer;opacity:.7;font-size:9px}
 .ms-tag .rm:hover{opacity:1}
@@ -138,34 +138,34 @@ td.pv{color:#475569}
 
 /* GLOBAL FILTER BAR */
 .global-filter-bar{display:flex;align-items:center;gap:20px;padding:10px 24px;
-  background:#0a0f1a;border-bottom:1px solid #1e2433;flex-wrap:wrap}
+  background:#fff;border-bottom:1px solid #e2e8f0;flex-wrap:wrap}
 .gf-group{display:flex;flex-direction:column;gap:4px}
 .gf-lbl{font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
 .gf-dates{display:flex;align-items:center;gap:6px}
-.gf-dates input[type=date]{background:#141824;border:1px solid #2e3a50;color:#cbd5e1;
+.gf-dates input[type=date]{background:#f8fafc;border:1px solid #cbd5e1;color:#334155;
   font-family:'Inter',sans-serif;font-size:11px;padding:4px 8px;border-radius:5px;
-  outline:none;cursor:pointer;color-scheme:dark}
-.gf-dates input[type=date]:focus{border-color:#4ade80}
+  outline:none;cursor:pointer;color-scheme:light}
+.gf-dates input[type=date]:focus{border-color:#3b82f6}
 .gf-slider-wrap{position:relative;width:200px;height:28px;--pMin:0%;--pMax:100%}
 .gf-slider-wrap input[type=range]{position:absolute;width:100%;height:4px;
   top:50%;transform:translateY(-50%);appearance:none;-webkit-appearance:none;
   background:transparent;pointer-events:none;outline:none;margin:0}
 .gf-slider-wrap input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;
-  width:14px;height:14px;border-radius:50%;background:#4ade80;border:2px solid #0d1117;
-  cursor:pointer;pointer-events:all;box-shadow:0 0 4px rgba(74,222,128,.4)}
+  width:14px;height:14px;border-radius:50%;background:#3b82f6;border:2px solid #fff;
+  cursor:pointer;pointer-events:all;box-shadow:0 0 4px rgba(59,130,246,.4)}
 .gf-slider-wrap input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
-  background:#4ade80;border:2px solid #0d1117;cursor:pointer;pointer-events:all}
+  background:#3b82f6;border:2px solid #fff;cursor:pointer;pointer-events:all}
 .gf-track{position:absolute;top:50%;transform:translateY(-50%);width:100%;height:4px;
-  background:#1e2433;border-radius:2px;pointer-events:none}
+  background:#e2e8f0;border-radius:2px;pointer-events:none}
 .gf-fill{position:absolute;top:50%;transform:translateY(-50%);height:4px;
-  background:linear-gradient(90deg,#3b82f6,#4ade80);border-radius:2px;
+  background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:2px;
   pointer-events:none;left:var(--pMin);right:calc(100% - var(--pMax))}
-.gf-day-val{font-size:11px;color:#e2e8f0;font-weight:700}
-.gf-reset{padding:4px 10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
-  color:#f87171;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;
+.gf-day-val{font-size:11px;color:#0f172a;font-weight:700}
+.gf-reset{padding:4px 10px;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);
+  color:#dc2626;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;
   border-radius:5px;cursor:pointer;margin-left:auto;white-space:nowrap}
-.gf-reset:hover{background:rgba(239,68,68,.2)}
-.gf-div{width:1px;height:30px;background:#1e2433;flex-shrink:0}
+.gf-reset:hover{background:rgba(220,38,38,.12)}
+.gf-div{width:1px;height:30px;background:#e2e8f0;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -185,17 +185,17 @@ td.pv{color:#475569}
 <!-- DATA FRESHNESS BAR -->
 <div id="freshness-bar" style="
   display:flex;align-items:center;gap:12px;padding:8px 24px;
-  background:#0d1520;border-bottom:1px solid #1e2433;
+  background:#f8fafc;border-bottom:1px solid #e2e8f0;
   font-size:11px;color:#64748b;flex-wrap:wrap">
   <span id="fresh-status" style="display:flex;align-items:center;gap:6px">
     <span style="width:7px;height:7px;border-radius:50%;background:#334155;display:inline-block" id="fresh-dot"></span>
     <span id="fresh-text">Loading data...</span>
   </span>
-  <span style="color:#1e2433">|</span>
-  <span id="fresh-rows" style="color:#475569"></span>
-  <span style="color:#1e2433">|</span>
-  <span id="fresh-github" style="color:#475569"></span>
-  <span style="margin-left:auto;cursor:pointer;color:#3b82f6;font-weight:600" onclick="loadAndRender()" title="Reload latest data">↻ Refresh</span>
+  <span style="color:#cbd5e1">|</span>
+  <span id="fresh-rows" style="color:#64748b"></span>
+  <span style="color:#cbd5e1">|</span>
+  <span id="fresh-github" style="color:#64748b"></span>
+  <span style="margin-left:auto;cursor:pointer;color:#2563eb;font-weight:600" onclick="loadAndRender()" title="Reload latest data">↻ Refresh</span>
 </div>
 
 <!-- GLOBAL FILTERS -->
@@ -240,7 +240,7 @@ td.pv{color:#475569}
 <div id="tab-trend" class="tab-content" style="display:none">
   <div class="filter-bar">
     <label>Metric</label>
-    <select id="trendMetric" onchange="buildTrend()" style="background:#141824;border:1px solid #2e3a50;color:#cbd5e1;font-family:'Inter',sans-serif;font-size:11px;padding:5px 10px;border-radius:6px;outline:none;cursor:pointer"></select>
+    <select id="trendMetric" onchange="buildTrend()" style="background:#fff;border:1px solid #cbd5e1;color:#334155;font-family:'Inter',sans-serif;font-size:11px;padding:5px 10px;border-radius:6px;outline:none;cursor:pointer"></select>
     <label>Region</label>
     <div class="ms-wrap" id="tr-region-wrap"></div>
     <label>Agent</label>
@@ -286,7 +286,7 @@ td.pv{color:#475569}
       <div class="dot" style="background:#f59e0b;width:8px;height:8px;border-radius:2px"></div>
       <div class="sec-name">Monthly Run Rate &amp; Last 5 Days</div>
     </div>
-    <div id="summaryContent"><div style="color:#475569;padding:20px;font-size:11px">Loading...</div></div>
+    <div id="summaryContent"><div style="color:#94a3b8;padding:20px;font-size:11px">Loading...</div></div>
   </div>
 </div>
 
@@ -297,17 +297,22 @@ td.pv{color:#475569}
 // ALL metric logic lives here — Python never needs to change.
 // To add KPIs → edit _buildData(). To change layout → edit HTML.
 // ═══════════════════════════════════════════════════════════
-const CSV_URL      = "https://raw.githubusercontent.com/narendrarawat1-hue/c2c-data/main/output.csv";
+// ── DATA SOURCE: switch between GitHub CSV (legacy) and FastAPI (live) ──────
+const USE_API      = false;   // ← set false to fall back to GitHub CSV
+const API_BASE     = "http://localhost:8000";
+const CSV_URL      = USE_API
+    ? `${API_BASE}/api/v1/aod/csv`
+    : "https://raw.githubusercontent.com/narendrarawat1-hue/c2c-data/main/output.csv";
 const LOGIN_AGENTS = new Set(["Central Src/ Conv Team","CONSUMER_MARKETPLACE_PANEL","Cx & System","Relationship Team","NA"]);
 const ALAB = {"CONSUMER_MARKETPLACE_PANEL":"Consumer MP","Central Src/ Conv Team":"Central Src/Conv","Cx & System":"Cx & System","NA":"NA (Unassigned)"};
 const EXCLUDED_AGENTS = new Set(["Relationship Team"]);
 
 // ── KPI DEFINITIONS ───────────────────────────────────────────────────────
-const ABS_KPIS = ['AOD Login Done','AOD Credit Assessed','AOD Credit Approved','AOD TNC Accptd Net','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD Internal Disbursed','AOD  PMAX Disbursal'];
+const ABS_KPIS = ['AOD Login Done','AOD Credit Assessed','AOD Credit Approved','AOD TNC Accptd Net','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD Internal Disbursed','AOD PMAX Disbursal'];
 const PCT_KPIS = ['% Login to Credit Assessed','% Credit Assessed to Approved','% Credit Approval to TNC Net','% Credit Approval to TNC Accepted','% TNC Accepted to DM','% TNC Accepted to PMAX_DM','% TNC Accepted to Disbursed','% Login to Disbursed','% DM to Internal Disbursal','% PMAX_DM to PMAX Disbursal'];
 const ALL_KPIS  = [...ABS_KPIS,...PCT_KPIS];
 const KPI_GROUPS= [{label:'Absolute Counts',keys:ABS_KPIS},{label:'Conversion Rates (%)',keys:PCT_KPIS}];
-const SHORT_KPI = {'AOD Login Done':'Login Done','AOD Credit Assessed':'Credit Assessed','AOD Credit Approved':'Credit Approved','AOD TNC Accptd Net':'TNC Net','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD: PMAX_DM':'PMAX DM','AOD Disbursed':'Disbursed','AOD Internal Disbursed':'Int. Disbursed','AOD  PMAX Disbursal':'PMAX Disbursal','% Login to Credit Assessed':'Login→CA','% Credit Assessed to Approved':'CA→Approved','% Credit Approval to TNC Net':'Appr→TNC Net','% Credit Approval to TNC Accepted':'Appr→TNC Acc','% TNC Accepted to DM':'TNC→DM','% TNC Accepted to PMAX_DM':'TNC→PMAX DM','% TNC Accepted to Disbursed':'TNC→Disb','% Login to Disbursed':'Login→Disb','% DM to Internal Disbursal':'DM→Int Disb','% PMAX_DM to PMAX Disbursal':'PMAX DM→Disb'};
+const SHORT_KPI = {'AOD Login Done':'Login Done','AOD Credit Assessed':'Credit Assessed','AOD Credit Approved':'Credit Approved','AOD TNC Accptd Net':'TNC Net','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD: PMAX_DM':'PMAX DM','AOD Disbursed':'Disbursed','AOD Internal Disbursed':'Int. Disbursed','AOD PMAX Disbursal':'PMAX Disbursal','% Login to Credit Assessed':'Login→CA','% Credit Assessed to Approved':'CA→Approved','% Credit Approval to TNC Net':'Appr→TNC Net','% Credit Approval to TNC Accepted':'Appr→TNC Acc','% TNC Accepted to DM':'TNC→DM','% TNC Accepted to PMAX_DM':'TNC→PMAX DM','% TNC Accepted to Disbursed':'TNC→Disb','% Login to Disbursed':'Login→Disb','% DM to Internal Disbursal':'DM→Int Disb','% PMAX_DM to PMAX Disbursal':'PMAX DM→Disb'};
 const BAR_COLORS= ['#3b82f6','#a855f7','#60a5fa','#f59e0b','#4ade80'];
 let _periodsLabels = ['Feb 2026','Mar 2026','LMTD','MTD'];
 let _histLabels    = ['Feb 2026','Mar 2026'];
@@ -340,7 +345,7 @@ function showError(msg){
   _freshStatus('red','❌ '+msg);
 }
 function _freshStatus(col,html){
-  const cols={orange:'#f59e0b',red:'#f87171',green:'#4ade80'};
+  const cols={orange:'#d97706',red:'#dc2626',green:'#16a34a'};
   const d=document.getElementById('fresh-dot'),t=document.getElementById('fresh-text');
   if(d)d.style.background=cols[col]||col;
   if(t)t.innerHTML=`<span style="color:${cols[col]||col}">${html}</span>`;
@@ -406,7 +411,7 @@ function _buildData(rows, gp){
   }
 
   // ── Add absolute metrics here ────────────────────────────────────────────
-  const ABS_M=['AOD Login Done','AOD Credit Assessed','AOD Credit Approved','AOD TNC Accptd Net','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD Internal Disbursed','AOD  PMAX Disbursal'];
+  const ABS_M=['AOD Login Done','AOD Credit Assessed','AOD Credit Approved','AOD TNC Accptd Net','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD Internal Disbursed','AOD PMAX Disbursal'];
 
   // ── Add conversion rates here ────────────────────────────────────────────
   function cpct(v){
@@ -421,7 +426,7 @@ function _buildData(rows, gp){
       '% TNC Accepted to Disbursed':      p(v['AOD Disbursed'],         v['AOD TNC Accepted']),
       '% Login to Disbursed':             p(v['AOD Disbursed'],         v['AOD Login Done']),
       '% DM to Internal Disbursal':       p(v['AOD Internal Disbursed'],v['AOD: DM']),
-      '% PMAX_DM to PMAX Disbursal':      p(v['AOD  PMAX Disbursal'],   v['AOD: PMAX_DM']),
+      '% PMAX_DM to PMAX Disbursal':      p(v['AOD PMAX Disbursal'],   v['AOD: PMAX_DM']),
     };
   }
 
@@ -501,23 +506,23 @@ function _renderGlobalFilters(){
       <label class="gf-lbl">📅 Date Range</label>
       <div class="gf-dates">
         <input type="date" id="gf-d1" value="${fmt(_dateFrom)}" onchange="_onDateChange()">
-        <span style="color:#475569">→</span>
+        <span style="color:#94a3b8">→</span>
         <input type="date" id="gf-d2" value="${fmt(_dateTo)}" onchange="_onDateChange()">
       </div>
     </div>
     <div class="gf-div"></div>
     <div class="gf-group">
-      <label class="gf-lbl">📆 Day of Month &nbsp;<span id="gf-day-val" style="color:#e2e8f0;font-weight:700">${_dayFrom}–${_dayTo}</span></label>
+      <label class="gf-lbl">📆 Day of Month &nbsp;<span id="gf-day-val" style="color:#0f172a;font-weight:700">${_dayFrom}–${_dayTo}</span></label>
       <div style="display:flex;align-items:center;gap:8px;padding-top:2px">
-        <span style="font-size:10px;color:#64748b;width:14px">${_dayFrom}</span>
+        <span style="font-size:10px;color:#94a3b8;width:14px">${_dayFrom}</span>
         <div style="position:relative;width:180px;height:20px">
-          <input type="range" id="gf-d-min" min="1" max="31" value="${_dayFrom}" style="position:absolute;width:100%;accent-color:#4ade80" oninput="_onDayChange()">
+          <input type="range" id="gf-d-min" min="1" max="31" value="${_dayFrom}" style="position:absolute;width:100%;accent-color:#3b82f6" oninput="_onDayChange()">
           <input type="range" id="gf-d-max" min="1" max="31" value="${_dayTo}"   style="position:absolute;width:100%;accent-color:#3b82f6" oninput="_onDayChange()">
         </div>
-        <span style="font-size:10px;color:#64748b;width:14px">${_dayTo}</span>
+        <span style="font-size:10px;color:#94a3b8;width:14px">${_dayTo}</span>
       </div>
     </div>
-    <button onclick="_resetFilters()" style="margin-left:8px;padding:4px 10px;background:rgba(100,116,139,.15);border:1px solid #2e3a50;color:#94a3b8;font-family:Inter,sans-serif;font-size:10px;border-radius:4px;cursor:pointer">Reset</button>`;
+    <button onclick="_resetFilters()" style="margin-left:8px;padding:4px 10px;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#dc2626;font-family:Inter,sans-serif;font-size:10px;border-radius:4px;cursor:pointer">Reset</button>`;
 }
 function _onDateChange(){
   _dateFrom=document.getElementById('gf-d1')?.value?new Date(document.getElementById('gf-d1').value+'T00:00:00'):null;
@@ -723,8 +728,8 @@ function buildSummaryTab(){
   if(!el||!_gp||!_rawRows.length)return;
   const {PERIODS,mtdMonth,mtdYear,mtdCutoff,lmtdMonth,lmtdYear}=_gp;
   const MN=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const KEY_M=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD  PMAX Disbursal'];
-  const KEY_L={'AOD Login Done':'Login Done','AOD Credit Approved':'Credit Approved','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD: PMAX_DM':'PMAX DM','AOD Disbursed':'Disbursed','AOD  PMAX Disbursal':'PMAX Disb'};
+  const KEY_M=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD PMAX Disbursal'];
+  const KEY_L={'AOD Login Done':'Login Done','AOD Credit Approved':'Credit Approved','AOD TNC Accepted':'TNC Accepted','AOD: DM':'DM','AOD: PMAX_DM':'PMAX DM','AOD Disbursed':'Disbursed','AOD PMAX Disbursal':'PMAX Disb'};
   const validRows=_rawRows.filter(r=>r._date&&!isNaN(r._date)&&r['Day of D.DTS']!=='All');
 
   function sumP(p,mn){
@@ -745,7 +750,7 @@ function buildSummaryTab(){
       </tr></thead><tbody>`;
 
   KEY_M.forEach(mn=>{
-    drrHtml+=`<tr><td style="font-weight:600;color:#e2e8f0">${KEY_L[mn]}</td>`;
+    drrHtml+=`<tr><td style="font-weight:600;color:#0f172a">${KEY_L[mn]}</td>`;
     drrPs.forEach(p=>{
       const tot=sumP(p,mn);const days=p.d2-p.d1+1;const drr=days>0?(tot/days).toFixed(1):'—';
       drrHtml+=`<td class="mv">${tot.toLocaleString('en-IN')}<span style="color:#64748b;font-weight:400;font-size:10px"> | ${drr}/d</span></td>`;
@@ -792,11 +797,11 @@ function buildSummaryTab(){
     const dm=Math.round(dd['AOD: DM']||0);
     const pmaxdm=Math.round(dd['AOD: PMAX_DM']||0);
     const disb=Math.round((dd['AOD Disbursed']||dd['AOD Disbursed '])||0);
-    const pmaxdisb=Math.round(dd['AOD  PMAX Disbursal']||0);
+    const pmaxdisb=Math.round(dd['AOD PMAX Disbursal']||0);
     const l2d=login>0?(disb/login*100).toFixed(1)+'%':'—';
     const t2d=tnc>0?(disb/tnc*100).toFixed(1)+'%':'—';
     l5Html+=`<tr>
-      <td style="font-weight:600;color:#e2e8f0">${fmtD(ds)}</td>
+      <td style="font-weight:600;color:#0f172a">${fmtD(ds)}</td>
       <td class="mv">${login.toLocaleString('en-IN')}</td>
       <td class="mv">${ca.toLocaleString('en-IN')}</td>
       <td class="mv">${tnc.toLocaleString('en-IN')}</td>
@@ -839,18 +844,18 @@ function buildSliceTable(tblId,data){
 
 // ── SUMMARY TABLE (all regions/agents side by side) ───────────────────────
 function buildSummaryTable(tblId,dataObj,type,filterEntities){
-  const COLS=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD  PMAX Disbursal','% Login to Disbursed','% TNC Accepted to Disbursed'];
+  const COLS=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD PMAX Disbursal','% Login to Disbursed','% TNC Accepted to Disbursed'];
   const entities=(filterEntities||Object.keys(dataObj)).filter(e=>COLS.some(k=>(dataObj[e]?.MTD?.[k]||0)>0||(dataObj[e]?.LMTD?.[k]||0)>0));
   let html=`<thead><tr><th>${type==='region'?'Region':'Agent'}</th>`+
-    COLS.map(k=>`<th class="mh" style="min-width:90px">${k.replace('AOD ','').replace('AOD: ','')}<br><span style="font-size:8px;color:#4ade80">MTD</span><span style="font-size:8px;color:#475569"> / </span><span style="font-size:8px;color:#60a5fa">LMTD</span></th><th class="dh" style="min-width:55px">Δ%</th>`).join('')+
+    COLS.map(k=>`<th class="mh" style="min-width:90px">${k.replace('AOD ','').replace('AOD: ','')}<br><span style="font-size:8px;color:#16a34a">MTD</span><span style="font-size:8px;color:#94a3b8"> / </span><span style="font-size:8px;color:#2563eb">LMTD</span></th><th class="dh" style="min-width:55px">Δ%</th>`).join('')+
     `</tr></thead><tbody>`;
   entities.forEach(e=>{
     const lbl=type==='agent'?(ALAB[e]||e):e;
-    const cols=COLS.map(k=>{const p=isPct(k),mtd=dataObj[e]?.MTD?.[k],lmtd=dataObj[e]?.LMTD?.[k];return`<td class="mv">${f(mtd,p)}<span style="color:#1e2433"> / </span><span style="color:#475569;font-weight:400">${f(lmtd,p)}</span></td><td>${pill(chgPct(mtd,lmtd))}</td>`;}).join('');
-    html+=`<tr><td style="font-weight:600;color:#e2e8f0">${lbl}</td>${cols}</tr>`;
+    const cols=COLS.map(k=>{const p=isPct(k),mtd=dataObj[e]?.MTD?.[k],lmtd=dataObj[e]?.LMTD?.[k];return`<td class="mv">${f(mtd,p)}<span style="color:#cbd5e1"> / </span><span style="color:#94a3b8;font-weight:400">${f(lmtd,p)}</span></td><td>${pill(chgPct(mtd,lmtd))}</td>`;}).join('');
+    html+=`<tr><td style="font-weight:600;color:#0f172a">${lbl}</td>${cols}</tr>`;
   });
   // Grand total = sum of filtered dataObj entities (not global OVERALL)
-  const ABS_GT=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD  PMAX Disbursal'];
+  const ABS_GT=['AOD Login Done','AOD Credit Approved','AOD TNC Accepted','AOD: DM','AOD: PMAX_DM','AOD Disbursed','AOD PMAX Disbursal'];
   const pctGT=(a,b)=>b?parseFloat((a/b*100).toFixed(1)):null;
   const gtSums={MTD:{},LMTD:{}};
   ['MTD','LMTD'].forEach(period=>{
@@ -858,7 +863,7 @@ function buildSummaryTable(tblId,dataObj,type,filterEntities){
     gtSums[period]['% Login to Disbursed']   =pctGT(gtSums[period]['AOD Disbursed'],    gtSums[period]['AOD Login Done']);
     gtSums[period]['% TNC Accepted to Disbursed']=pctGT(gtSums[period]['AOD Disbursed'],gtSums[period]['AOD TNC Accepted']);
   });
-  const gtCols=COLS.map(k=>{const p=isPct(k),mtd=gtSums.MTD[k],lmtd=gtSums.LMTD[k];return`<td class="mv">${f(mtd,p)}<span style="color:#1e2433"> / </span><span style="color:#475569;font-weight:400">${f(lmtd,p)}</span></td><td>${pill(chgPct(mtd,lmtd))}</td>`;}).join('');
+  const gtCols=COLS.map(k=>{const p=isPct(k),mtd=gtSums.MTD[k],lmtd=gtSums.LMTD[k];return`<td class="mv">${f(mtd,p)}<span style="color:#cbd5e1"> / </span><span style="color:#94a3b8;font-weight:400">${f(lmtd,p)}</span></td><td>${pill(chgPct(mtd,lmtd))}</td>`;}).join('');
   html+=`<tr class="gr"><td>⭐ Grand Total</td>${gtCols}</tr></tbody>`;
   document.getElementById(tblId).innerHTML=html;
 }
@@ -987,7 +992,7 @@ async function loadAndRender(){
     rows.forEach(r=>{
       r._date =r['Day of D.DTS']?new Date(r['Day of D.DTS']):null;
       r._val  =parseFloat(r['Measure Values'])||0;
-      r._mn   =(r['Measure Names']||'').trim();
+      r._mn   =(r['Measure Names']||'').trim().replace(/^Sum\s+of\s+/i,'').replace(/\s+/g,' ');
       const rawReg=(r['Yard Region ']||r['Yard Region']||'').trim();
       r._reg  =(!rawReg||rawReg==='NaN'||rawReg.toLowerCase()==='nan')?'NA':rawReg;
       const rawAgent=(r['ASSEST_ATTACHED_AGENT_ID (group)']||'').trim();
@@ -1012,14 +1017,19 @@ async function loadAndRender(){
     populateTrendSelect();
 
     // Freshness bar
-    _freshStatus('green',`✅ Data loaded · Latest: <b style="color:#e2e8f0">${UPDATED_AT}</b>`);
+    _freshStatus('green',`✅ Data loaded · Latest: <b style="color:#0f172a">${UPDATED_AT}</b>`);
     const rowsEl=document.getElementById('fresh-rows');
     if(rowsEl)rowsEl.textContent=`${valid.length.toLocaleString('en-IN')} rows`;
 
-    // GitHub last push
+    // Freshness source — API meta or GitHub commit
     try{
-      const gh=await fetch('https://api.github.com/repos/narendrarawat1-hue/c2c-data/commits?path=output.csv&per_page=1');
-      if(gh.ok){const cm=await gh.json();if(cm.length){const diff=Math.round((new Date()-new Date(cm[0].commit.committer.date))/60000);const ago=diff<60?`${diff}m ago`:diff<1440?`${Math.round(diff/60)}h ago`:`${Math.round(diff/1440)}d ago`;const ghEl=document.getElementById('fresh-github');if(ghEl)ghEl.innerHTML=`CSV last pushed: <b style="color:#e2e8f0">${ago}</b>`;}}
+      if(USE_API){
+        const meta=await fetch(`${API_BASE}/api/v1/aod/meta`);
+        if(meta.ok){const m=await meta.json();const ghEl=document.getElementById('fresh-github');if(ghEl&&m.latest_date)ghEl.innerHTML=`Snowflake latest: <b style="color:#0f172a">${m.latest_date}</b> · Cache TTL: ${m.cache_ttl_seconds}s`;}
+      } else {
+        const gh=await fetch('https://api.github.com/repos/narendrarawat1-hue/c2c-data/commits?path=output.csv&per_page=1');
+        if(gh.ok){const cm=await gh.json();if(cm.length){const diff=Math.round((new Date()-new Date(cm[0].commit.committer.date))/60000);const ago=diff<60?`${diff}m ago`:diff<1440?`${Math.round(diff/60)}h ago`:`${Math.round(diff/1440)}d ago`;const ghEl=document.getElementById('fresh-github');if(ghEl)ghEl.innerHTML=`CSV last pushed: <b style="color:#0f172a">${ago}</b>`;}}
+      }
     }catch(_){}
 
     console.log(`✅ Dashboard ready — ${valid.length} rows | ${Object.keys(BY_REGION).length} regions | ${Object.keys(BY_AGENT).length} agents`);
